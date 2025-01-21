@@ -28,20 +28,21 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.backgroundColor = .systemGray2
+        self.tabBarController?.tabBar.isHidden = true
         self.delegate = self
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let controller1 = storyboard.instantiateViewController(withIdentifier: "DocumentsViewController") as! DocumentsViewController
-        controller1.tabBarItem = UITabBarItem(title: "Documents", image: #imageLiteral(resourceName: "ic_documents"), selectedImage: #imageLiteral(resourceName: "ic_documents"))
+        controller1.tabBarItem = UITabBarItem(title: "", image: nil, selectedImage: nil)
         navDocuments = UINavigationController(rootViewController: controller1)
         navDocuments.navigationBar.isHidden = true
         
-        let controller2 = storyboard.instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
-        controller2.tabBarItem = UITabBarItem(title: "Settings", image: #imageLiteral(resourceName: "ic_settings"), selectedImage: #imageLiteral(resourceName: "ic_settings"))
-        navSettings = UINavigationController(rootViewController: controller2)
-        navSettings.navigationBar.isHidden = true
+//        let controller2 = storyboard.instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
+//        controller2.tabBarItem = UITabBarItem(title: "Settings", image: #imageLiteral(resourceName: "ic_settings"), selectedImage: #imageLiteral(resourceName: "ic_settings"))
+//        navSettings = UINavigationController(rootViewController: controller2)
+//        navSettings.navigationBar.isHidden = true
         
-        self.viewControllers = [navDocuments, UINavigationController(), navSettings]
+        self.viewControllers = [navDocuments, UINavigationController()]
         
         picker?.delegate = self
         
@@ -89,8 +90,8 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         let actionSheetController: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         // create an action
-        let firstAction: UIAlertAction = UIAlertAction(title: "Take Photo", style: .default) { action -> Void in
-            self.openCamera()
+        let firstAction: UIAlertAction = UIAlertAction(title: "Create PDF", style: .default) { action -> Void in
+            self.createNewPDF()
         }
         let secondAction: UIAlertAction = UIAlertAction(title: "Choose Photo", style: .default) { action -> Void in
             self.openGalary()
@@ -154,13 +155,82 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         
     }
     
-    func openCamera() {
-        let scannerViewController = VNDocumentCameraViewController()
-        scannerViewController.delegate = self
-        present(scannerViewController, animated: true)
+    func createNewPDF() {
+//        let scannerViewController = VNDocumentCameraViewController()
+//        scannerViewController.delegate = self
+//        present(scannerViewController, animated: true)
 //        picker?.allowsEditing = true
 //        picker?.sourceType = UIImagePickerController.SourceType.camera
 //        present(picker!, animated: true, completion: nil)
+        promptForFileName { fileName in
+                guard let fileName = fileName else {
+                    print("User canceled or entered an invalid name.")
+                    return
+                }
+
+                print("User entered file name: \(fileName)")
+
+                // Generate empty images (replace `desiredPageCount` with the number of pages needed)
+                let desiredPageCount = 5 // Example: 5 blank pages
+            let selectedImages = self.generateEmptyImages(count: desiredPageCount)
+
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true) {
+                        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+                            secondVC.editPDF = .add
+                            secondVC.pdfNewName = fileName
+                            secondVC.transferedImage = selectedImages
+                            secondVC.hidesBottomBarWhenPushed = true
+                            self.navigationController?.pushViewController(secondVC, animated: true)
+                        }
+                    }
+                }
+            }
+       
+    }
+    
+    func promptForFileName(completion: @escaping (String?) -> Void) {
+        // Create an alert controller
+        let alertController = UIAlertController(title: "Enter File Name", message: "Please provide a name for your file.", preferredStyle: .alert)
+
+        // Add a text field to the alert
+        alertController.addTextField { textField in
+            textField.placeholder = "File Name"
+        }
+
+        // Add an "OK" action
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            let fileName = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+            completion(fileName?.isEmpty == false ? fileName : nil)
+        }
+
+        // Add a "Cancel" action
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            completion(nil) // User canceled, return nil
+        }
+
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+
+        // Present the alert
+        if let topController = UIApplication.shared.keyWindow?.rootViewController {
+            topController.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    func generateEmptyImages(count: Int, size: CGSize = CGSize(width: 612, height: 792)) -> [UIImage] {
+        var emptyImages: [UIImage] = []
+        for _ in 0..<count {
+            UIGraphicsBeginImageContext(size)
+            let context = UIGraphicsGetCurrentContext()
+            context?.setFillColor(UIColor.white.cgColor)
+            context?.fill(CGRect(origin: .zero, size: size))
+            if let image = UIGraphicsGetImageFromCurrentImageContext() {
+                emptyImages.append(image)
+            }
+            UIGraphicsEndImageContext()
+        }
+        return emptyImages
     }
     
     private func generateBoundaryString() -> String {
@@ -171,6 +241,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         dismiss(animated: true, completion: nil)
     }
     
+   
     func createPDF(){
         
         let data = pdfView.document?.dataRepresentation()

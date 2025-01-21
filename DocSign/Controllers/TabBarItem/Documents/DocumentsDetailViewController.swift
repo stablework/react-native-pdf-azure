@@ -8,7 +8,6 @@
 import UIKit
 import PDFKit
 import QuickLook
-import GoogleMobileAds
 import PhotosUI
 import VisionKit
 
@@ -113,9 +112,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     var myClosure:([PDFinfo]) -> Void = {_ in}
     
-    var bannerView = GADBannerView()
-    private var appOpen: GADAppOpenAd?
-    private var interstitial: GADInterstitialAd?
+
     
     //MARK: - ViewController life cycle method
     override func viewDidLoad() {
@@ -143,15 +140,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         self.pdfView.isUserInteractionEnabled = false
         
-        if appDelegate.modelConfig.isShowiOSAds != nil {
-            if(appDelegate.modelConfig.isShowiOSAds){
-                setupAds()
-                interstitialAddAds()
-            }else{
-                self.height_banner.constant = 0
-            }
-            appDelegate.checkAppVersionUpdated()
-        }
+     
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -172,20 +161,30 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
             dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
             let dateTime = dateFormatter.string(from: currentDate)
             
-            let str = "PDF \(dateTime)"
-            let replaced = str.replacingOccurrences(of: " ", with: "_")
-            
-            let fileManager = FileManager()
+            let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
+            let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
+
+            // Construct document directory path
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let docURL = documentDirectory.appendingPathComponent("PDF \(c_dateTime)")
-            if fileManager.fileExists(atPath: docURL.path){
+            let docURL = documentDirectory.appendingPathComponent(finalFileName)
+
+            // Check if file exists and assign to pdfView
+            if FileManager.default.fileExists(atPath: docURL.path) {
                 pdfView.document = PDFDocument(url: docURL)
             }
-            
+
+            // Get file size
             let fileSize = fileSize(fromPath: "\(docURL.path)")
-            
-            let pdfModel = PDFinfo(title: "PDF \(c_dateTime)", size: "\(fileSize ?? "")", dateTime: "\(c_dateTime)", pageCount: "\("") page", pdfName: "\(replaced).pdf")
-            
+
+            // Create PDFinfo model
+            let pdfModel = PDFinfo(
+                title: finalFileName,
+                size: "\(fileSize ?? "")",
+                dateTime: "\(c_dateTime)",
+                pageCount: "\("") page",
+                pdfName: "\(formattedFileName).pdf"
+            )
+
             self.modelPDF = pdfModel
             
             print(pdfModel)
@@ -605,76 +604,11 @@ extension PDFView {
 
 //MARK: - Functions
 extension DocumentsDetailViewController{
-    func setupAds(){
-        bannerView = GADBannerView(adSize: bannerSize)
-        bannerView.adUnitID = GBBannerID
-        bannerView.rootViewController = self
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        bannerView.load(GADRequest())
-        bannerView.delegate = self
-        view_banner.addSubview(bannerView)
-        view_banner.isHidden = true
-        bannerView.centerXAnchor.constraint(equalTo: view_banner.centerXAnchor).isActive = true
-        bannerView.centerYAnchor.constraint(equalTo: view_banner.centerYAnchor).isActive = true
-    }
+  
     
-    func interstitialAddAds(){
-        appDelegate.loadAds(interstitial: { ad in
-            self.interstitial = ad
-            self.show(.Interstitial)
-        }, reward: nil, adsType: .Interstitial)
-    }
-    
-    func show(_ type:GoogleAddType){
-        let vc = appDelegate.window?.visibleViewController
-        switch type {
-        case .Interstitial:
-            if let ad = interstitial {
-                ad.present(fromRootViewController: vc ?? self)
-            } else {
-              print("Ad wasn't ready")
-            }
-        case .AppOpen:
-            if let ad = appOpen {
-                ad.present(fromRootViewController: vc ?? self)
-            } else {
-              print("Ad wasn't ready")
-            }
-        }
-    }
+
 }
 
-//MARK: - Banner Delegate
-extension DocumentsDetailViewController:GADBannerViewDelegate {
-
-    func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        print("bannerViewDidReceiveAd")
-        view_banner.isHidden = false
-        height_banner.constant = 50
-    }
-
-    func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        print("bannerView:didFailToReceiveAdWithError: \(error.localizedDescription)")
-        height_banner.constant = 0
-    }
-
-    func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
-        print("bannerViewDidRecordImpression")
-    }
-
-    func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillPresentScreen")
-    }
-
-    func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillDIsmissScreen")
-    }
-
-    func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewDidDismissScreen")
-    }
-
-}
 
 //new photo picker
 extension DocumentsDetailViewController : PHPickerViewControllerDelegate {

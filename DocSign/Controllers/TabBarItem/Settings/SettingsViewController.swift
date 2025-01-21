@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import GoogleMobileAds
+
 import MessageUI
 
 struct Setting{
@@ -36,9 +36,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     Setting(image: AppConstants.SettingsMenu_images.img5, lblTitle: AppConstants.SettingsMenu_lblTitle.lbl_title5),
                     Setting(image: AppConstants.SettingsMenu_images.img6, lblTitle: AppConstants.SettingsMenu_lblTitle.lbl_title6)]
     
-    var bannerView = GADBannerView()
-    private var appOpen: GADAppOpenAd?
-    private var interstitial: GADInterstitialAd?
+
 
 //MARK: - ViewController life cycle method
     override func viewDidLoad() {
@@ -49,14 +47,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
        
         self.lbl_version.text = "Version \(getAppInfo())"
         
-        if appDelegate.modelConfig.isShowiOSAds != nil {
-            if(appDelegate.modelConfig.isShowiOSAds){
-                setupAds()
-            }else{
-                self.height_banner.constant = 0
-            }
-            appDelegate.checkAppVersionUpdated()
-        }
+    
 //        self.navigationController?.navigationBar.isHidden = true
 //        self.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
 //        self.navigationItem.largeTitleDisplayMode = .always
@@ -146,52 +137,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 }
 
-//MARK: - Functions
-extension SettingsViewController{
-    func setupAds(){
-        bannerView = GADBannerView(adSize: bannerSize)
-        bannerView.adUnitID = GBBannerID
-        bannerView.rootViewController = self
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        bannerView.load(GADRequest())
-        bannerView.delegate = self
-        view_banner.addSubview(bannerView)
-        view_banner.isHidden = true
-        bannerView.centerXAnchor.constraint(equalTo: view_banner.centerXAnchor).isActive = true
-        bannerView.centerYAnchor.constraint(equalTo: view_banner.centerYAnchor).isActive = true
-    }
-}
-
-//MARK: - Banner Delegate
-extension SettingsViewController:GADBannerViewDelegate {
-    
-    func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        print("bannerViewDidReceiveAd")
-        view_banner.isHidden = false
-        height_banner.constant = 50
-    }
-    
-    func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        print("bannerView:didFailToReceiveAdWithError: \(error.localizedDescription)")
-        height_banner.constant = 0
-    }
-    
-    func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
-        print("bannerViewDidRecordImpression")
-    }
-    
-    func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillPresentScreen")
-    }
-    
-    func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillDIsmissScreen")
-    }
-    
-    func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewDidDismissScreen")
-    }
-}
 
 struct AppSupport {
     static func rateApp(){

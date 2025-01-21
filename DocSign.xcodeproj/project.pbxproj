@@ -827,13 +827,15 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cook PDF App";
+				INFOPLIST_KEY_CFBundleDisplayName = "Azure PDF app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "PDF Editor requires access to your phone’s camera to take photo and convert into pdf.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Your location is required for analytics purpose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is required for analytics purpose.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "PDF Editor requires access to your library to take photo and convert into pdf.";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "App would like to access IDFA for tracking purpose.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -847,8 +849,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hashmob.pdfeditor;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -869,12 +871,14 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cook PDF App";
+				INFOPLIST_KEY_CFBundleDisplayName = "Azure PDF app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "PDF Editor requires access to your phone’s camera to take photo and convert into pdf.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Your location is required for analytics purpose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is required for analytics purpose.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "PDF Editor requires access to your library to take photo and convert into pdf.";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "App would like to access IDFA for tracking purpose.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -888,8 +892,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hashmob.pdfeditor;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -907,7 +911,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
@@ -919,7 +923,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hashmob.pdfeditor.OneSignalNotificationServiceExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -934,7 +938,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OneSignalNotificationServiceExtension;
@@ -945,7 +949,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hashmob.pdfeditor.OneSignalNotificationServiceExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

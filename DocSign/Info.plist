@@ -25,14 +25,7 @@
 	<string>Poppins-SemiBold.ttf</string>
 	<key>Privacy - Camera Usage Description</key>
 	<string>PDF Editor requires access to your phone’s camera to take photo and convert into pdf.</string>
-	
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Your location is required for analytics purpose.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Your location is required for analytics purpose.</string>
-    
-    
-    <key>SKAdNetworkItems</key>
+	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
 			<key>SKAdNetworkIdentifier</key>

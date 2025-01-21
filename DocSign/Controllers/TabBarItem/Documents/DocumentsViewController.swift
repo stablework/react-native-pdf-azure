@@ -7,7 +7,7 @@
 
 import UIKit
 import PDFKit
-import GoogleMobileAds
+
 import QuickLook
 import Lottie
 
@@ -44,9 +44,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var modelPDF : PDFinfo!
     
-    var bannerView = GADBannerView()
-    private var appOpen: GADAppOpenAd?
-    private var interstitial: GADInterstitialAd?
+
     var selectedIndex:IndexPath?
     
 
@@ -64,15 +62,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.tblView_documents.reloadData()
         
-        
-        if appDelegate.modelConfig.isShowiOSAds != nil {
-           if(appDelegate.modelConfig.isShowiOSAds){
-               setupAds()
-           }else{
-               self.height_banner.constant = 0
-           }
-           appDelegate.checkAppVersionUpdated()
-       }
         img_noDocuments?.animation = .named("noPDF")
          
         img_noDocuments!.loopMode = .loop
@@ -94,23 +83,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
       
     }
   
-    func show(_ type:GoogleAddType){
-        let vc = appDelegate.window?.visibleViewController
-        switch type {
-        case .Interstitial:
-            if let ad = interstitial {
-                ad.present(fromRootViewController: vc ?? self)
-            } else {
-              print("Ad wasn't ready")
-            }
-        case .AppOpen:
-            if let ad = appOpen {
-                ad.present(fromRootViewController: vc ?? self)
-            } else {
-              print("Ad wasn't ready")
-            }
-        }
-    }
+
 
     func menu(indexPath:IndexPath,showRemovePass:Bool) -> UIMenu {
         
@@ -386,7 +359,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
 //        boolValue) in
 //            let vc = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as! DocumentsDetailViewController
 //            vc.editPDF = .edit
-//            vc.modelPDF = appDelegate.arrPDFinfo[indexPath.section]
+//           vc.modelPDF = appDelegate.arrPDFinfo[indexPath.section]
 //            vc.hidesBottomBarWhenPushed = true
 //            vc.myClosure = { arr in
 //                appDelegate.arrPDFinfo = arr
@@ -404,51 +377,10 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
 
 //MARK: - Functions
 extension DocumentsViewController{
-    func setupAds(){
-        bannerView = GADBannerView(adSize: bannerSize)
-        bannerView.adUnitID = GBBannerID
-        bannerView.rootViewController = self
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        bannerView.load(GADRequest())
-        bannerView.delegate = self
-        view_banner.addSubview(bannerView)
-        view_banner.isHidden = true
-        bannerView.centerXAnchor.constraint(equalTo: view_banner.centerXAnchor).isActive = true
-        bannerView.centerYAnchor.constraint(equalTo: view_banner.centerYAnchor).isActive = true
-    }
+ 
 }
 
-//MARK: - Banner Delegate
-extension DocumentsViewController:GADBannerViewDelegate {
 
-    func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        print("bannerViewDidReceiveAd")
-        view_banner.isHidden = false
-        height_banner.constant = 50
-    }
-
-    func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        print("bannerView:didFailToReceiveAdWithError: \(error.localizedDescription)")
-        height_banner.constant = 0
-    }
-
-    func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
-        print("bannerViewDidRecordImpression")
-    }
-
-    func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillPresentScreen")
-    }
-
-    func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewWillDIsmissScreen")
-    }
-
-    func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
-        print("bannerViewDidDismissScreen")
-    }
-
-}
 
 extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewControllerDelegate {
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {

@@ -421,34 +421,22 @@
                                     <constraint firstAttribute="trailing" secondItem="u7Y-DO-kdc" secondAttribute="trailing" id="zcE-FT-oyG"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7cT-xS-lgF">
-                                <rect key="frame" x="0.0" y="862" width="414" height="0.0"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" id="LZN-2u-P0A"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="z4V-00-el4"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="vb2-Is-XYv" firstAttribute="top" secondItem="z4V-00-el4" secondAttribute="top" id="9cr-zl-UDe"/>
-                            <constraint firstItem="7cT-xS-lgF" firstAttribute="trailing" secondItem="z4V-00-el4" secondAttribute="trailing" id="CGE-iz-hlA"/>
                             <constraint firstItem="vb2-Is-XYv" firstAttribute="bottom" secondItem="z4V-00-el4" secondAttribute="bottom" id="CZm-xR-0M4"/>
                             <constraint firstAttribute="trailing" secondItem="vb2-Is-XYv" secondAttribute="trailing" id="JRs-Vc-puX"/>
-                            <constraint firstItem="7cT-xS-lgF" firstAttribute="leading" secondItem="z4V-00-el4" secondAttribute="leading" id="M6v-U6-Oce"/>
-                            <constraint firstItem="z4V-00-el4" firstAttribute="bottom" secondItem="7cT-xS-lgF" secondAttribute="bottom" id="RtA-Ks-E7f"/>
                             <constraint firstItem="vb2-Is-XYv" firstAttribute="leading" secondItem="ztV-SN-su9" secondAttribute="leading" id="jMo-H5-XbB"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="CTw-sN-HlG"/>
                     <connections>
-                        <outlet property="height_banner" destination="LZN-2u-P0A" id="NUv-Vk-Oqy"/>
                         <outlet property="img_downArrow" destination="h4l-Rw-SkB" id="peu-L5-0ib"/>
                         <outlet property="img_noDocuments" destination="Qde-vF-uo2" id="tP8-pC-fcd"/>
                         <outlet property="lbl_title" destination="iGg-C2-1xS" id="E47-MJ-7Sn"/>
                         <outlet property="tblView_documents" destination="LSG-So-pUp" id="TaV-aj-XMw"/>
-                        <outlet property="view_banner" destination="7cT-xS-lgF" id="gTB-a9-LXj"/>
                         <outlet property="view_noDocumentsAdded" destination="u7Y-DO-kdc" id="sLP-3j-vmO"/>
                     </connections>
                 </viewController>
@@ -814,23 +802,13 @@
                                     <constraint firstItem="ZFF-db-ssv" firstAttribute="leading" secondItem="RhX-OO-1LF" secondAttribute="leading" id="zDG-oq-LHB"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eG6-0c-b7E">
-                                <rect key="frame" x="0.0" y="792" width="414" height="0.0"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" id="Rui-Va-kGY"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Pbo-io-bz3"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="RhX-OO-1LF" firstAttribute="leading" secondItem="Pbo-io-bz3" secondAttribute="leading" id="6C5-XC-ahb"/>
-                            <constraint firstItem="eG6-0c-b7E" firstAttribute="trailing" secondItem="Pbo-io-bz3" secondAttribute="trailing" id="AOD-aV-C7C"/>
-                            <constraint firstItem="eG6-0c-b7E" firstAttribute="leading" secondItem="Pbo-io-bz3" secondAttribute="leading" id="AfP-wk-4q6"/>
                             <constraint firstItem="Pbo-io-bz3" firstAttribute="bottom" secondItem="RhX-OO-1LF" secondAttribute="bottom" id="EL7-E0-Oac"/>
                             <constraint firstItem="RhX-OO-1LF" firstAttribute="top" secondItem="Pbo-io-bz3" secondAttribute="top" id="PS3-c6-TDc"/>
-                            <constraint firstItem="Pbo-io-bz3" firstAttribute="bottom" secondItem="eG6-0c-b7E" secondAttribute="bottom" constant="70" id="QdJ-7Y-ptr"/>
                             <constraint firstItem="Pbo-io-bz3" firstAttribute="trailing" secondItem="RhX-OO-1LF" secondAttribute="trailing" id="y8E-5e-BiZ"/>
                         </constraints>
                     </view>
@@ -852,12 +830,10 @@
                         <outlet property="btn_txtDelete" destination="ItS-xe-FnS" id="SRg-M1-b7L"/>
                         <outlet property="btn_txtShare" destination="MHi-x8-r1c" id="L4B-Tn-vKG"/>
                         <outlet property="btn_txtSignature" destination="s9Y-Ph-cK2" id="3Q8-BV-wkh"/>
-                        <outlet property="height_banner" destination="Rui-Va-kGY" id="iCc-sv-JRg"/>
                         <outlet property="lbl_text" destination="0PL-D7-MQ7" id="CpD-uj-cqO"/>
                         <outlet property="lbl_title" destination="6nE-8y-k0X" id="jxW-6h-Wx3"/>
                         <outlet property="main_view" destination="sOA-T9-Rdx" id="fd7-x6-gK1"/>
                         <outlet property="pageController" destination="dVF-a9-tkd" id="2fl-BG-wXE"/>
-                        <outlet property="view_banner" destination="eG6-0c-b7E" id="dYY-hK-dQB"/>
                         <outlet property="view_bottomButtons" destination="KGF-gc-2FF" id="red-XH-NTq"/>
                     </connections>
                 </viewController>
@@ -1196,7 +1172,7 @@
         <image name="ic_signature" width="30" height="30"/>
         <image name="ic_text" width="30" height="30"/>
         <namedColor name="app_themeColor">
-            <color red="0.88235294117647056" green="0.12156862745098039" blue="0.21568627450980393" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="pdfEditor_navigationTitleColor">
             <color red="0.41200000047683716" green="0.41200000047683716" blue="0.41200000047683716" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -11,7 +11,6 @@ import FirebaseAnalytics
 import FirebaseCrashlytics
 import FirebaseRemoteConfig
 import AppTrackingTransparency
-import GoogleMobileAds
 import OneSignalFramework
 
 @main
@@ -32,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         FirebaseApp.configure()
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+      
         
         OneSignal.Debug.setLogLevel(.LL_VERBOSE)
           // OneSignal initialization
@@ -116,49 +115,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.shared.registerForRemoteNotifications()
     }
     
-    func requestPermission() {
-        if #available(iOS 14, *) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                switch status {
-                case .authorized:
-                    // Tracking authorization dialog was shown
-                    // and we are authorized
-                    print("Authorized")
-                    // Now that we are authorized we can get the IDFA
-                    self.showOpenAds()
-                case .denied:
-                    // Tracking authorization dialog was
-                    // shown and permission is denied
-                    print("Denied")
-                    self.showOpenAds()
-                case .notDetermined:
-                    // Tracking authorization dialog has not been shown
-                    print("Not Determined")
-                    self.showOpenAds()
-                case .restricted:
-                    print("Restricted")
-                    self.showOpenAds()
-                @unknown default:
-                    print("Unknown")
-                    self.showOpenAds()
-                }
-            }
-        } else {
-            // Fallback on earlier versions
-            self.showOpenAds()
-        }
-    }
+
     
-    func showOpenAds(){
-         if let isupgrade = getInt(key: AppConstants.UserDefaultKeys.isUpgradePlan), isupgrade == 1{
-        }else{
-            if(appDelegate.modelConfig.isShowiOSAds){
-                loadAds(interstitial: nil, reward: nil, appOpen: { ad in
-                    ad?.present(fromRootViewController: UIApplication.shared.windows.first?.rootViewController ?? UIViewController())
-                }, adsType: .AppOpen)
-            }
-        }
-    }
+   
 }
 
 //MARK: - Get Remote Config, Check App version and, Home screen setup method
@@ -181,7 +140,7 @@ extension AppDelegate{
                         }
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            self.requestPermission()
+//                            self.requestPermission()
                             self.dispatchgroup.leave()
                         }
                     }else{
@@ -243,36 +202,7 @@ extension AppDelegate{
 
 //MARK: - Google Ads
 extension AppDelegate{
-    func loadAds(interstitial:((GADInterstitialAd?)->())? = nil,reward:((GADRewardedAd?)->())? = nil,appOpen:((GADAppOpenAd?)->())? = nil,adsType:GoogleAddType){
-        let request = GADRequest()
-        switch adsType {
-        case .Interstitial:
-            GADInterstitialAd.load(withAdUnitID: GBInterstitialAdId,
-                                   request: request,
-                                   completionHandler: { ad, error in
-                if let error = error {
-                    print("Failed to load interstitial ad with error: \(error.localizedDescription)")
-                    return
-                }
-                if let interstitial = interstitial {
-                    interstitial(ad)
-                }
-            })
-        case .AppOpen:
-            
-            GADAppOpenAd.load(withAdUnitID: GBAppOpenID,
-                              request: request,
-                              completionHandler: { ad, error in
-                if let error = error {
-                    print("Failed to load GADAppOpenAd ad with error: \(error.localizedDescription)")
-                    return
-                }
-                if let appOpen = appOpen {
-                    appOpen(ad)
-                }
-            })
-        }
-    }
+    
 }
 
 //MARK: - User Notification Center Delegate Method

@@ -13,6 +13,7 @@ class DocumentsTableViewCell: UITableViewCell {
     @IBOutlet weak var img_profile: UIImageView!
     @IBOutlet weak var lbl_title: UILabel!
   
+    @IBOutlet weak var lbl_fileNum: UILabel!
     @IBOutlet weak var btn_editPdf: UIButton!
     
     var editCallBack:(() -> ())?

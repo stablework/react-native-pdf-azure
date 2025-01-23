@@ -243,14 +243,17 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BPh-kV-Nz1">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="52.5"/>
                                         <subviews>
-                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kds-Ra-muT">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kds-Ra-muT">
                                                 <rect key="frame" x="364" y="10" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="40" id="CVx-M4-VdY"/>
                                                     <constraint firstAttribute="height" constant="40" id="MOY-3P-8BE"/>
                                                 </constraints>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="ic_premium"/>
+                                                <state key="normal" title="Back"/>
+                                                <connections>
+                                                    <action selector="handleBack:" destination="c0W-2M-8DN" eventType="touchUpInside" id="XGm-KJ-dA4"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cook PDF App" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kpb-dj-Rgv">
                                                 <rect key="frame" x="15" y="10" width="329" height="32.5"/>
@@ -321,22 +324,34 @@
                                                                     </subviews>
                                                                 </stackView>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3hL-L4-MvG">
-                                                                    <rect key="frame" x="339.5" y="10" width="18.5" height="22"/>
+                                                                    <rect key="frame" x="328" y="10" width="30" height="22"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="22" id="lWm-OL-ZL1"/>
+                                                                        <constraint firstAttribute="width" constant="30" id="vJS-aP-ml9"/>
+                                                                    </constraints>
                                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                     <state key="normal" image="ellipsis" catalog="system"/>
                                                                     <connections>
                                                                         <action selector="btnShowMenuOptionClick:" destination="uZV-qK-twV" eventType="touchUpInside" id="gNq-Gm-XNl"/>
                                                                     </connections>
                                                                 </button>
+                                                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mp8-k9-jJU">
+                                                                    <rect key="frame" x="316.5" y="11" width="41.5" height="20.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
                                                             </subviews>
                                                             <viewLayoutGuide key="safeArea" id="jf6-LG-gPT"/>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
                                                                 <constraint firstItem="jf6-LG-gPT" firstAttribute="trailing" secondItem="3hL-L4-MvG" secondAttribute="trailing" constant="16" id="37Q-IZ-EhA"/>
                                                                 <constraint firstItem="3hL-L4-MvG" firstAttribute="centerY" secondItem="jf6-LG-gPT" secondAttribute="centerY" id="CEM-SR-14B"/>
+                                                                <constraint firstItem="Mp8-k9-jJU" firstAttribute="trailing" secondItem="3hL-L4-MvG" secondAttribute="trailing" id="CcR-fx-JxH"/>
                                                                 <constraint firstItem="jf6-LG-gPT" firstAttribute="bottom" secondItem="Uj0-az-Rzl" secondAttribute="bottom" constant="1" id="CiB-9h-D2l"/>
                                                                 <constraint firstItem="5BR-Nn-UFC" firstAttribute="leading" secondItem="Uj0-az-Rzl" secondAttribute="trailing" constant="4" id="IXa-SC-Cmq"/>
                                                                 <constraint firstItem="Uj0-az-Rzl" firstAttribute="centerY" secondItem="jf6-LG-gPT" secondAttribute="centerY" id="JgN-YS-UhE"/>
+                                                                <constraint firstItem="Mp8-k9-jJU" firstAttribute="centerY" secondItem="3hL-L4-MvG" secondAttribute="centerY" id="Jz4-aO-k0W"/>
                                                                 <constraint firstItem="Uj0-az-Rzl" firstAttribute="leading" secondItem="jf6-LG-gPT" secondAttribute="leading" constant="10" id="YGg-xC-gZc"/>
                                                                 <constraint firstItem="Uj0-az-Rzl" firstAttribute="leading" secondItem="jf6-LG-gPT" secondAttribute="leading" constant="10" id="gJU-0s-oCS"/>
                                                                 <constraint firstItem="5BR-Nn-UFC" firstAttribute="centerY" secondItem="jf6-LG-gPT" secondAttribute="centerY" id="pmS-Rv-DgR"/>
@@ -354,6 +369,7 @@
                                                 <connections>
                                                     <outlet property="btn_editPdf" destination="3hL-L4-MvG" id="NW6-YY-f22"/>
                                                     <outlet property="img_profile" destination="T6G-J9-SCu" id="vCg-D7-jAl"/>
+                                                    <outlet property="lbl_fileNum" destination="Mp8-k9-jJU" id="gFf-qa-ZEb"/>
                                                     <outlet property="lbl_title" destination="u30-4o-8a5" id="WBK-3m-UkF"/>
                                                     <outlet property="view_imgProfile" destination="Uj0-az-Rzl" id="1nN-ey-CDd"/>
                                                 </connections>
@@ -433,6 +449,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="CTw-sN-HlG"/>
                     <connections>
+                        <outlet property="backBtn" destination="kds-Ra-muT" id="3oi-bZ-4qT"/>
                         <outlet property="img_downArrow" destination="h4l-Rw-SkB" id="peu-L5-0ib"/>
                         <outlet property="img_noDocuments" destination="Qde-vF-uo2" id="tP8-pC-fcd"/>
                         <outlet property="lbl_title" destination="iGg-C2-1xS" id="E47-MJ-7Sn"/>
@@ -543,17 +560,17 @@
                                                 <rect key="frame" x="10" y="0.0" width="394" height="60"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XGl-ja-uUc">
-                                                        <rect key="frame" x="0.0" y="0.0" width="98.5" height="60"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="131.5" height="60"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zBB-6H-Jvx">
-                                                                <rect key="frame" x="10" y="0.0" width="78.5" height="60"/>
+                                                                <rect key="frame" x="10" y="0.0" width="111.5" height="60"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                 <connections>
                                                                     <action selector="btn_mainAdd:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="tDk-aH-JFj"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OvX-7J-0VE">
-                                                                <rect key="frame" x="0.0" y="0.0" width="98.5" height="40"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="131.5" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="Yub-za-o7J"/>
                                                                 </constraints>
@@ -562,7 +579,7 @@
                                                                 <state key="normal" image="ic_addImg"/>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cS6-yL-jKn">
-                                                                <rect key="frame" x="0.0" y="40" width="98.5" height="20"/>
+                                                                <rect key="frame" x="0.0" y="40" width="131.5" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
                                                                 <color key="tintColor" name="app_themeColor"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -585,17 +602,17 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UwY-Za-JU8">
-                                                        <rect key="frame" x="98.5" y="0.0" width="98.5" height="60"/>
+                                                        <rect key="frame" x="131.5" y="0.0" width="131" height="60"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dJO-KF-TLB">
-                                                                <rect key="frame" x="10" y="0.0" width="78.5" height="60"/>
+                                                                <rect key="frame" x="10" y="0.0" width="111" height="60"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                 <connections>
                                                                     <action selector="btn_mainShare:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="KJW-TU-fJf"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JHh-YU-xXm">
-                                                                <rect key="frame" x="0.0" y="0.0" width="98.5" height="40"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="131" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="Y6e-NW-Gse"/>
                                                                 </constraints>
@@ -604,7 +621,7 @@
                                                                 <state key="normal" image="ic_share"/>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MHi-x8-r1c">
-                                                                <rect key="frame" x="0.0" y="40" width="98.5" height="20"/>
+                                                                <rect key="frame" x="0.0" y="40" width="131" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
                                                                 <color key="tintColor" name="app_themeColor"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -626,50 +643,8 @@
                                                             <constraint firstItem="dJO-KF-TLB" firstAttribute="top" secondItem="UwY-Za-JU8" secondAttribute="top" id="hNc-op-J2W"/>
                                                         </constraints>
                                                     </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XhK-cL-AO7">
-                                                        <rect key="frame" x="197" y="0.0" width="98.5" height="60"/>
-                                                        <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eN1-tV-r8A">
-                                                                <rect key="frame" x="10" y="0.0" width="78.5" height="60"/>
-                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                                <connections>
-                                                                    <action selector="btn_mainSignature:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="w9e-cm-8tg"/>
-                                                                </connections>
-                                                            </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ybC-iZ-INK">
-                                                                <rect key="frame" x="0.0" y="0.0" width="98.5" height="40"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="40" id="CkX-Yd-jHV"/>
-                                                                </constraints>
-                                                                <color key="tintColor" name="app_themeColor"/>
-                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                                <state key="normal" image="ic_signature"/>
-                                                            </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s9Y-Ph-cK2">
-                                                                <rect key="frame" x="0.0" y="40" width="98.5" height="20"/>
-                                                                <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
-                                                                <color key="tintColor" name="app_themeColor"/>
-                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                                <state key="normal" title="Signature"/>
-                                                            </button>
-                                                        </subviews>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="trailing" secondItem="ybC-iZ-INK" secondAttribute="trailing" id="0n3-Ig-OVY"/>
-                                                            <constraint firstAttribute="bottom" secondItem="eN1-tV-r8A" secondAttribute="bottom" id="8oI-xS-rOR"/>
-                                                            <constraint firstItem="ybC-iZ-INK" firstAttribute="top" secondItem="XhK-cL-AO7" secondAttribute="top" id="NIj-tw-Yi0"/>
-                                                            <constraint firstItem="eN1-tV-r8A" firstAttribute="top" secondItem="XhK-cL-AO7" secondAttribute="top" id="SGv-IK-rWv"/>
-                                                            <constraint firstItem="eN1-tV-r8A" firstAttribute="leading" secondItem="XhK-cL-AO7" secondAttribute="leading" constant="10" id="XsW-Ch-nYN"/>
-                                                            <constraint firstAttribute="bottom" secondItem="s9Y-Ph-cK2" secondAttribute="bottom" id="cAq-us-5kp"/>
-                                                            <constraint firstAttribute="trailing" secondItem="eN1-tV-r8A" secondAttribute="trailing" constant="10" id="h17-DZ-KVj"/>
-                                                            <constraint firstItem="s9Y-Ph-cK2" firstAttribute="top" secondItem="ybC-iZ-INK" secondAttribute="bottom" id="k3A-cg-z4s"/>
-                                                            <constraint firstItem="ybC-iZ-INK" firstAttribute="leading" secondItem="XhK-cL-AO7" secondAttribute="leading" id="lyM-Y2-VEV"/>
-                                                            <constraint firstItem="s9Y-Ph-cK2" firstAttribute="leading" secondItem="XhK-cL-AO7" secondAttribute="leading" id="pfF-n4-Wdj"/>
-                                                            <constraint firstAttribute="trailing" secondItem="s9Y-Ph-cK2" secondAttribute="trailing" id="vyc-Ky-BzO"/>
-                                                        </constraints>
-                                                    </view>
                                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bq4-9j-PtV">
-                                                        <rect key="frame" x="295.5" y="0.0" width="20" height="60"/>
+                                                        <rect key="frame" x="262.5" y="0.0" width="20" height="60"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fW7-lZ-NNF">
                                                                 <rect key="frame" x="10" y="0.0" width="0.0" height="60"/>
@@ -709,17 +684,17 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ds9-ze-vud">
-                                                        <rect key="frame" x="295.5" y="0.0" width="98.5" height="60"/>
+                                                        <rect key="frame" x="262.5" y="0.0" width="131.5" height="60"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U0p-sz-pVu">
-                                                                <rect key="frame" x="10" y="0.0" width="78.5" height="60"/>
+                                                                <rect key="frame" x="10" y="0.0" width="111.5" height="60"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                 <connections>
                                                                     <action selector="btn_mainDelete:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="jrT-bI-dFK"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ivz-nr-ZJB">
-                                                                <rect key="frame" x="0.0" y="0.0" width="98.5" height="40"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="131.5" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="0S9-kV-Uka"/>
                                                                 </constraints>
@@ -729,7 +704,7 @@
                                                                 <state key="selected" image="ic_delete"/>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ItS-xe-FnS">
-                                                                <rect key="frame" x="0.0" y="40" width="98.5" height="20"/>
+                                                                <rect key="frame" x="0.0" y="40" width="131.5" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
                                                                 <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -820,16 +795,13 @@
                         <outlet property="btn_mainAdd" destination="zBB-6H-Jvx" id="VLb-Kj-svX"/>
                         <outlet property="btn_mainDelete" destination="U0p-sz-pVu" id="6Rf-ph-omr"/>
                         <outlet property="btn_mainShare" destination="dJO-KF-TLB" id="MEG-5s-Fz5"/>
-                        <outlet property="btn_mainSignature" destination="eN1-tV-r8A" id="XvP-UE-Gtc"/>
                         <outlet property="btn_mainText" destination="fW7-lZ-NNF" id="e2O-3B-1pR"/>
                         <outlet property="btn_printer" destination="8ZM-DU-dUX" id="Cli-LH-hJG"/>
                         <outlet property="btn_share" destination="JHh-YU-xXm" id="fte-Zh-LUW"/>
-                        <outlet property="btn_signature" destination="ybC-iZ-INK" id="Ktm-Se-5AL"/>
                         <outlet property="btn_text" destination="RxV-l7-ZlI" id="6DU-yq-Xz6"/>
                         <outlet property="btn_txtAdd" destination="cS6-yL-jKn" id="ucx-At-Wpq"/>
                         <outlet property="btn_txtDelete" destination="ItS-xe-FnS" id="SRg-M1-b7L"/>
                         <outlet property="btn_txtShare" destination="MHi-x8-r1c" id="L4B-Tn-vKG"/>
-                        <outlet property="btn_txtSignature" destination="s9Y-Ph-cK2" id="3Q8-BV-wkh"/>
                         <outlet property="lbl_text" destination="0PL-D7-MQ7" id="CpD-uj-cqO"/>
                         <outlet property="lbl_title" destination="6nE-8y-k0X" id="jxW-6h-Wx3"/>
                         <outlet property="main_view" destination="sOA-T9-Rdx" id="fd7-x6-gK1"/>
@@ -1165,7 +1137,6 @@
         <image name="ic_arrowDown" width="30" height="30"/>
         <image name="ic_backBtn" width="30" height="30"/>
         <image name="ic_delete" width="30" height="30"/>
-        <image name="ic_premium" width="30" height="30"/>
         <image name="ic_printer" width="30" height="30"/>
         <image name="ic_settings" width="30" height="30"/>
         <image name="ic_share" width="30" height="30"/>

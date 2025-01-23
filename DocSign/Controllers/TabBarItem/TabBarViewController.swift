@@ -7,7 +7,7 @@
 
 import UIKit
 import PDFKit
-import GoogleMobileAds
+
 import PhotosUI
 import VisionKit
 
@@ -18,11 +18,13 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
     
     var navDocuments:UINavigationController!
     var navSettings:UINavigationController!
-    
+    var documentsViewController: DocumentsViewController?
+
     var picker: UIImagePickerController? = UIImagePickerController()
     
     var pdfView = PDFView()
     var pdfDocument: PDFDocument!
+    var toggleButtonVisibility: ((Bool) -> Void)?
     
     //MARK: - ViewController life cycle method
     override func viewDidLoad() {
@@ -41,7 +43,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
 //        controller2.tabBarItem = UITabBarItem(title: "Settings", image: #imageLiteral(resourceName: "ic_settings"), selectedImage: #imageLiteral(resourceName: "ic_settings"))
 //        navSettings = UINavigationController(rootViewController: controller2)
 //        navSettings.navigationBar.isHidden = true
-        
+        self.documentsViewController = controller1
         self.viewControllers = [navDocuments, UINavigationController()]
         
         picker?.delegate = self
@@ -49,6 +51,20 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         //to set app_themeColor to tint color of button while they're selecting:
         UITabBar.appearance().tintColor = UIColor(named: "app_themeColor")
         appDelegate.registerNotification()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleToggleButtonVisibility(_:)), name: Notification.Name("ToggleButtonVisibility"), object: nil)
+    }
+    
+    @objc private func handleToggleButtonVisibility(_ notification: Notification) {
+        if let isVisible = notification.userInfo?["isVisible"] as? Bool {
+            print("Button visibility is now: \(isVisible)")
+            // Implement visibility logic here
+            menuButton.isHidden = !isVisible
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("ToggleButtonVisibility"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,6 +82,10 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         return true
     }
     
+    func toggleCustomButtonVisibility(isHidden: Bool) {
+        menuButton.isHidden = isHidden
+       }
+    
     // TabBarButton – Setup Middle Button
     func setupMiddleButton() {
         var menuButtonFrame = menuButton.frame
@@ -78,6 +98,9 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
         menuButton.tintColor = UIColor(named: "app_themeColor")
         menuButton.addTarget(self, action: #selector(TabBarViewController.menuButtonAction), for: UIControl.Event.touchUpInside)
         self.view.addSubview(menuButton)
+        toggleButtonVisibility = { [weak self] isHidden in
+            self?.menuButton.isHidden = isHidden
+             }
         self.view.layoutIfNeeded()
     }
     
@@ -173,18 +196,28 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
                 // Generate empty images (replace `desiredPageCount` with the number of pages needed)
                 let desiredPageCount = 5 // Example: 5 blank pages
             let selectedImages = self.generateEmptyImages(count: desiredPageCount)
-
+            if let documentVC = self.documentsViewController {
+                 let currentFolderPath = documentVC.currentFolderPath
+                 print("Current Folder Path: \(currentFolderPath)")
                 DispatchQueue.main.async {
                     self.dismiss(animated: true) {
                         if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+                            
                             secondVC.editPDF = .add
                             secondVC.pdfNewName = fileName
                             secondVC.transferedImage = selectedImages
+                            secondVC.curFolderPath = currentFolderPath
                             secondVC.hidesBottomBarWhenPushed = true
                             self.navigationController?.pushViewController(secondVC, animated: true)
                         }
                     }
                 }
+                 
+                 // Perform your logic with currentFolderPath here
+             } else {
+                 print("DocumentViewController not found")
+             }
+               
             }
        
     }

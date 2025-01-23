@@ -17,6 +17,9 @@ struct PDFinfo: Codable {
     var dateTime: String
     var pageCount: String
     var pdfName: String
+    var isFavorite: String
+    var lastAccessedDate: String
+    var folderPath: String
 }
 
 enum type {
@@ -44,9 +47,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     @IBOutlet weak var btn_share: UIButton!
     @IBOutlet weak var btn_txtShare: UIButton!
     
-    @IBOutlet weak var btn_mainSignature: UIButton!
-    @IBOutlet weak var btn_signature: UIButton!
-    @IBOutlet weak var btn_txtSignature: UIButton!
+
     
     @IBOutlet weak var btn_mainText: UIButton!
     @IBOutlet weak var btn_text: UIButton!
@@ -68,9 +69,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     //UIPageController:
     @IBOutlet weak var pageController: UIPageControl!
     
-    //UIView:
-    @IBOutlet weak var view_banner: UIView!
-    @IBOutlet weak var height_banner: NSLayoutConstraint!
+   
     
     //MARK: - Properties
     
@@ -79,6 +78,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     var documents = PDFDocument()
     var pdfNewName:String = ""
     var existingPdfName:String = ""
+    var curFolderPath:String = ""
     var editPDF:type = .add
     
     //model:
@@ -128,12 +128,12 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         self.btn_add.isUserInteractionEnabled = false
         self.btn_share.isUserInteractionEnabled = false
-        self.btn_signature.isUserInteractionEnabled = false
+        
         self.btn_text.isUserInteractionEnabled = false
         self.btn_delete.isUserInteractionEnabled = false
         self.btn_txtAdd.isUserInteractionEnabled = false
         self.btn_txtShare.isUserInteractionEnabled = false
-        self.btn_txtSignature.isUserInteractionEnabled = false
+        
         self.btn_txtDelete.isUserInteractionEnabled = false
         
         self.pdfView.delegate = self
@@ -182,7 +182,11 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
                 size: "\(fileSize ?? "")",
                 dateTime: "\(c_dateTime)",
                 pageCount: "\("") page",
-                pdfName: "\(formattedFileName).pdf"
+                pdfName: "\(formattedFileName).pdf",
+                isFavorite: "false",
+                lastAccessedDate: "\(dateTime)",
+                folderPath: curFolderPath
+                
             )
 
             self.modelPDF = pdfModel
@@ -248,14 +252,14 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         present(activityController, animated: true, completion: nil)
     }
     
-    @IBAction func btn_mainSignature(_ sender: Any) {
-        editPDF = .edit
-        let previewController = QLPreviewController()
-        previewController.dataSource = self
-        previewController.delegate = self
-        previewController.setEditing(true, animated: true)
-        self.present(previewController, animated: true, completion: nil)
-    }
+//    @IBAction func btn_mainSignature(_ sender: Any) {
+//        editPDF = .edit
+//        let previewController = QLPreviewController()
+//        previewController.dataSource = self
+//        previewController.delegate = self
+//        previewController.setEditing(true, animated: true)
+//        self.present(previewController, animated: true, completion: nil)
+//    }
     
     @IBAction func btn_mainText(_ sender: Any) {
     }

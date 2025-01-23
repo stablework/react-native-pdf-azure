@@ -827,7 +827,7 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 763V9H2D3T;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -871,7 +871,7 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 763V9H2D3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;

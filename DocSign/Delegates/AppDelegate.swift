@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //MARK: - AppDelegates
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+        checkAndFetchToken()
         FirebaseApp.configure()
       
         
@@ -114,6 +114,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         UIApplication.shared.registerForRemoteNotifications()
     }
+    
+    private func checkAndFetchToken() {
+            // Check if the token is valid
+            if !ApiService.shared.isTokenValid() {
+                let tenantID = tenantID
+                let clientID = clientID
+                let clientSecret = clientSecret
+                
+                ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
+                    switch result {
+                    case .success:
+                        print("Token refreshed successfully")
+                    case .failure(let error):
+                        print("Failed to refresh token: \(error.localizedDescription)")
+                    }
+                }
+            } else {
+                print("Token is still valid, no need to refresh")
+            }
+        }
+    
     
 
     

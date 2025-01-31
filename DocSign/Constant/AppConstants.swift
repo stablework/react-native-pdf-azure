@@ -15,6 +15,12 @@ let APP_PLATFORM = "iOS"
 let KStatusBarHeight = UIApplication.shared.statusBarFrame.height
 let GOOGLE_PLACE_API_KEY = "AIzaSyBJs2f0TNNui_OcRHgVRTIsJAvGQ0EB7oA"
 
+let tenantID = "e5ae3765-2175-4ca5-8c46-4d901c5b77b3"
+let clientID = "2a1c2ff5-d96c-489f-8a16-f89a3b8ea713"
+let clientSecret = "lPA8Q~Wi7292aKJ8mZcNJnE7im3qsV32TFGxSaPL"
+
+let storageAccountName = "pdfstoreaccount"
+
 
 //MARK: - UIStoryboard
 

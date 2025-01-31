@@ -52,7 +52,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     // Fixed folders
     let fixedFolders = ["Recent", "Favorite"]
     // Dynamic content
-    var otherFolders: [String] = ["Folder1"]
+    var otherFolders: [Container] = []
     var otherFolders1: [String] = ["Cooker"]
     var otherFolders2: [String] = ["PDFs"]
     var otherFolders3: [String] = []
@@ -87,6 +87,28 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         tblView_documents.separatorInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
         
         backBtn.isHidden = true
+        
+        fetchContainers()
+    }
+    
+    private func fetchContainers() {
+        let storageAccountName = storageAccountName
+        
+        ApiService.shared.listStorageContents(storageAccountName: storageAccountName) { result in
+            switch result {
+            case .success(let containers):
+                print("Fetched containers: \(containers)")
+                
+                // Update the otherFolder array and reload the table view
+                DispatchQueue.main.async {
+                    self.otherFolders = containers
+                    self.tblView_documents.reloadData()
+                }
+                
+            case .failure(let error):
+                print("Error fetching containers: \(error.localizedDescription)")
+            }
+        }
     }
     
     // Load folders and PDFs from the specified path
@@ -417,7 +439,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else {
                 cell.lbl_fileNum.isHidden = true
-                cell.lbl_title.text = otherFolders[indexPath.row]
+                cell.lbl_title.text = otherFolders[indexPath.row].name
                 cell.img_profile.image = UIImage(systemName: "folder")
             }
             cell.btn_editPdf.isHidden = true
@@ -550,7 +572,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.tblView_documents.reloadData()
             } else {
                 showFixedFolders = false
-                currentFolderPath += otherFolders[indexPath.row]
+                currentFolderPath += otherFolders[indexPath.row].name
                 self.tblView_documents.reloadData()
             }
         } else {

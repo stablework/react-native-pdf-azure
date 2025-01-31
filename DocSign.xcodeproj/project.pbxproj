@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -182,6 +182,11 @@
 		88D36F6C29A4F01900225810 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8472B7BD2D48289C00D99B71 /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
+		8472B7C32D4B371600D99B71 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		04C81C8F298D0B93008FC605 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -339,6 +344,8 @@
 		04C81C94298D0B93008FC605 /* DocSign */ = {
 			isa = PBXGroup;
 			children = (
+				8472B7C32D4B371600D99B71 /* Models */,
+				8472B7BD2D48289C00D99B71 /* Services */,
 				048983B2299F501A001A2A45 /* Resource */,
 				04BF275229A09EE900C52025 /* Helper */,
 				0486C0A8298E106800B688A2 /* Extensions */,
@@ -472,6 +479,10 @@
 			);
 			dependencies = (
 				88D36F6E29A4F01900225810 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8472B7BD2D48289C00D99B71 /* Services */,
+				8472B7C32D4B371600D99B71 /* Models */,
 			);
 			name = DocSign;
 			packageProductDependencies = (

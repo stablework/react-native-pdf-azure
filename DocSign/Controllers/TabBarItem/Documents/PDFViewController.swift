@@ -87,7 +87,7 @@ class PDFViewController: UIViewController {
 
     func createPDFAnnotation(image: UIImage, page: PDFPage) -> PDFAnnotation {
         // Create a PDFAnnotation with custom drawing
-        let annotation = PDFAnnotation(bounds: CGRect(x: 0, y: 0, width: page.bounds(for: .cropBox).width, height: page.bounds(for: .cropBox).height), forType: .stamp, withProperties: nil)
+        let annotation = PDFAnnotation(bounds: CGRect(x: 0, y: 0, width: page.bounds(for: .mediaBox).width, height: page.bounds(for: .mediaBox).height), forType: .stamp, withProperties: nil)
 
         // Create an image context and draw the image
         UIGraphicsBeginImageContextWithOptions(annotation.bounds.size, false, 0.0)

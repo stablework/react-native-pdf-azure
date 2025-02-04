@@ -178,47 +178,77 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
     }
     
     func createNewPDF() {
-//        let scannerViewController = VNDocumentCameraViewController()
-//        scannerViewController.delegate = self
-//        present(scannerViewController, animated: true)
-//        picker?.allowsEditing = true
-//        picker?.sourceType = UIImagePickerController.SourceType.camera
-//        present(picker!, animated: true, completion: nil)
-        promptForFileName { fileName in
-                guard let fileName = fileName else {
+        if let documentVC = self.documentsViewController {
+            let currentFolderPath = documentVC.currentFolderPath
+            promptForFileName { pdfNewName in
+                guard let pdfNewName = pdfNewName else {
                     print("User canceled or entered an invalid name.")
                     return
                 }
-
-                print("User entered file name: \(fileName)")
-
+                
                 // Generate empty images (replace `desiredPageCount` with the number of pages needed)
                 let desiredPageCount = 5 // Example: 5 blank pages
-            let selectedImages = self.generateEmptyImages(count: desiredPageCount)
-            if let documentVC = self.documentsViewController {
-                 let currentFolderPath = documentVC.currentFolderPath
-                 print("Current Folder Path: \(currentFolderPath)")
-                DispatchQueue.main.async {
-                    self.dismiss(animated: true) {
-                        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
-                            
-                            secondVC.editPDF = .add
-                            secondVC.pdfNewName = fileName
-                            secondVC.transferedImage = selectedImages
-                            secondVC.curFolderPath = currentFolderPath
-                            secondVC.hidesBottomBarWhenPushed = true
-                            self.navigationController?.pushViewController(secondVC, animated: true)
-                        }
-                    }
+                let selectedImages = self.generateEmptyImages(count: desiredPageCount)
+                
+                let pdfDocument = PDFDocument()
+                
+                for (index, image) in selectedImages.enumerated() {
+                    let pdfPage = PDFPage(image: image)
+                    pdfDocument.insert(pdfPage!, at: index)
                 }
-                 
-                 // Perform your logic with currentFolderPath here
-             } else {
-                 print("DocumentViewController not found")
-             }
-               
+                let data = pdfDocument.dataRepresentation()
+                
+                
+                //current date and time:
+                let currentDate = Date()
+                var dateFormatter = DateFormatter()
+                
+                //Current time:
+                dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
+                let c_dateTime = dateFormatter.string(from: currentDate)
+                
+                //Replace space(" ") with "_":
+                dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+                let dateTime = dateFormatter.string(from: currentDate)
+                
+                let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
+                let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
+
+                // Construct document directory path
+                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                var destinationPath = documentDirectory.appendingPathComponent(formattedFileName).appendingPathExtension("pdf")
+
+                // Get file size
+                let fileSize = self.fileSize(fromPath: "\(destinationPath.path)")
+                
+                print("User entered file name: \(pdfNewName)")
+                
+                print("createURL:\(destinationPath)")
+                
+                do{
+                    try data?.write(to: destinationPath)
+                    let pdfDocument = PDFDocument(url: destinationPath) ?? PDFDocument()
+                    // Create PDFinfo model
+                    var pdfModel = PDFinfo(
+                        title: finalFileName,
+                        size: "\(fileSize ?? "")",
+                        dateTime: "\(c_dateTime)",
+                        pageCount: "\("") page",
+                        pdfName: "\(formattedFileName).pdf",
+                        isFavorite: "false",
+                        lastAccessedDate: "\(dateTime)",
+                        folderPath: ""
+                    )
+                    //set pageCount and pdfSize:
+                    pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
+                    pdfModel.size = fileSize ?? ""
+                    
+                    self.navigateToDocumentDetailScreen(pdfDocument: pdfDocument, url: destinationPath, pdfModel: pdfModel)
+                }catch(let error){
+                    print("error is \(error.localizedDescription)")
+                }
             }
-       
+        }
     }
     
     func promptForFileName(completion: @escaping (String?) -> Void) {
@@ -293,126 +323,239 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
 
 extension TabBarViewController:PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        
-//        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
-//            secondVC.editPDF = .add
-//            secondVC.transferedImage = pickedImage
-//            secondVC.hidesBottomBarWhenPushed = true
-//            self.navigationController?.pushViewController(secondVC, animated: true)
-//            
-//        }
+        // Process the scanned pages
         let dispatchGroup = DispatchGroup()
         
-        var selectedImages:[UIImage] = [UIImage]()
-       
-        for result in results {
+        let pdfDocument = PDFDocument()
+        
+        for (pageNumber, result) in results.enumerated() {
             dispatchGroup.enter()
             result.itemProvider.loadObject(ofClass: UIImage.self) { imageObject, error in
                 if let image = imageObject as? UIImage {
-                    print(image)
-                    selectedImages.append(image)
-                    print(selectedImages.count)
+                    let pdfPage = PDFPage(image: image)
+                    pdfDocument.insert(pdfPage!, at: pageNumber)
                 }
                 dispatchGroup.leave()
             }
         }
         
         dispatchGroup.notify(queue: .main) {
-            self.dismiss(animated: true)
-            if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
-                     secondVC.editPDF = .add
-                     secondVC.transferedImage = selectedImages
-                     secondVC.hidesBottomBarWhenPushed = true
-                     self.navigationController?.pushViewController(secondVC, animated: true)
-         
-                 }
+            let data = pdfDocument.dataRepresentation()
+            
+            //current date and time:
+            let currentDate = Date()
+            var dateFormatter = DateFormatter()
+            var pdfNewName:String = ""
+            
+            //Current time:
+            dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
+            let c_dateTime = dateFormatter.string(from: currentDate)
+            
+            //Replace space(" ") with "_":
+            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+            let dateTime = dateFormatter.string(from: currentDate)
+            
+            let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
+            let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
+
+            // Construct document directory path
+            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            var destinationPath = documentDirectory.appendingPathComponent(formattedFileName).appendingPathExtension("pdf")
+
+            // Get file size
+            let fileSize = self.fileSize(fromPath: "\(destinationPath.path)")
+            
+            print("createURL:\(destinationPath)")
+            
+            do{
+                try data?.write(to: destinationPath)
+                let pdfDocument = PDFDocument(url: destinationPath) ?? PDFDocument()
+                // Create PDFinfo model
+                var pdfModel = PDFinfo(
+                    title: finalFileName,
+                    size: "\(fileSize ?? "")",
+                    dateTime: "\(c_dateTime)",
+                    pageCount: "\("") page",
+                    pdfName: "\(formattedFileName).pdf",
+                    isFavorite: "false",
+                    lastAccessedDate: "\(dateTime)",
+                    folderPath: ""
+                )
+                //set pageCount and pdfSize:
+                pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
+                pdfModel.size = fileSize ?? ""
+                
+                self.navigateToDocumentDetailScreen(pdfDocument: pdfDocument, url: destinationPath, pdfModel: pdfModel)
+            }catch(let error){
+                print("error is \(error.localizedDescription)")
+            }
         }
-        
-//
-        
     }
-    
-    
-    
 }
 
 extension TabBarViewController:VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-        // Process the scanned pages
-        let dispatchGroup = DispatchGroup()
+        let pdfDocument = PDFDocument()
         
-        var selectedImages:[UIImage] = [UIImage]()
-        
-        var lastImage:UIImage!
         for pageNumber in 0..<scan.pageCount {
-            dispatchGroup.enter()
             let image = scan.imageOfPage(at: pageNumber)
-            print(image)
-            selectedImages.append(image)
-            print(selectedImages.count)
-            lastImage = image
-            dispatchGroup.leave()
+            let pdfPage = PDFPage(image: image)
+            pdfDocument.insert(pdfPage!, at: pageNumber)
         }
+        let data = pdfDocument.dataRepresentation()
+        
+        //current date and time:
+        let currentDate = Date()
+        var dateFormatter = DateFormatter()
+        var pdfNewName:String = ""
+        
+        //Current time:
+        dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
+        let c_dateTime = dateFormatter.string(from: currentDate)
+        
+        //Replace space(" ") with "_":
+        dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+        let dateTime = dateFormatter.string(from: currentDate)
+        
+        let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
+        let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
 
-        // You are responsible for dismissing the controller.
-        dispatchGroup.notify(queue: .main) {
-            controller.dismiss(animated: true)
-            if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
-                     secondVC.editPDF = .add
-                     secondVC.transferedImage = selectedImages
-                     secondVC.hidesBottomBarWhenPushed = true
-                     self.navigationController?.pushViewController(secondVC, animated: true)
-         
-                 }
+        // Construct document directory path
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        var destinationPath = documentDirectory.appendingPathComponent(formattedFileName).appendingPathExtension("pdf")
+
+        // Get file size
+        let fileSize = fileSize(fromPath: "\(destinationPath.path)")
+        
+        
+        
+        print("createURL:\(destinationPath)")
+        
+        do{
+            try data?.write(to: destinationPath)
+            let pdfDocument = PDFDocument(url: destinationPath) ?? PDFDocument()
+            
+            // Create PDFinfo model
+            var pdfModel = PDFinfo(
+                title: finalFileName,
+                size: "\(fileSize ?? "")",
+                dateTime: "\(c_dateTime)",
+                pageCount: "\("") page",
+                pdfName: "\(formattedFileName).pdf",
+                isFavorite: "false",
+                lastAccessedDate: "\(dateTime)",
+                folderPath: ""
+            )
+            //set pageCount and pdfSize:
+            pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
+            pdfModel.size = fileSize ?? ""
+            
+            navigateToDocumentDetailScreen(pdfDocument: pdfDocument, url: destinationPath, pdfModel: pdfModel)
+        }catch(let error){
+            print("error is \(error.localizedDescription)")
         }
-       
     }
 }
 extension TabBarViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        
-        let dispatchGroup = DispatchGroup()
-        
-        var selectedImages:[UIImage] = [UIImage]()
-        
         if let url = urls.first {
+            let originPath = url
             
-            pdfDocument = PDFDocument(url: url)
-            for pageIndex in 0..<pdfDocument.pageCount {
-                guard let pdfPage = pdfDocument.page(at: pageIndex) else { continue }
+            //current date and time:
+            let currentDate = Date()
+            var dateFormatter = DateFormatter()
+            var pdfNewName:String = ""
+            
+            //Current time:
+            dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
+            let c_dateTime = dateFormatter.string(from: currentDate)
+            
+            //Replace space(" ") with "_":
+            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+            let dateTime = dateFormatter.string(from: currentDate)
+            
+            let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
+            let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
+
+            // Construct document directory path
+            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+
+            let destinationPath = documentDirectory.appendingPathComponent(formattedFileName).appendingPathExtension("pdf")
+            
+            // Get file size
+            let fileSize = fileSize(fromPath: "\(destinationPath.path)")
+            
+            do{
+                try FileManager.default.moveItem(at: originPath, to: destinationPath)
+                let pdfDocument = PDFDocument(url: url) ?? PDFDocument()
                 
-                // Render PDF page as image
-                let pageRect = pdfPage.bounds(for: .mediaBox)
-                UIGraphicsBeginImageContextWithOptions(pageRect.size, false, 0.0)
-                guard let context = UIGraphicsGetCurrentContext() else { return }
-                context.translateBy(x: 0.0, y: pageRect.size.height)
-                context.scaleBy(x: 1.0, y: -1.0)
-                pdfPage.draw(with: .mediaBox, to: context)
-                let pageImage = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
+                // Create PDFinfo model
+                var pdfModel = PDFinfo(
+                    title: finalFileName,
+                    size: "\(fileSize ?? "")",
+                    dateTime: "\(c_dateTime)",
+                    pageCount: "\("") page",
+                    pdfName: "\(formattedFileName).pdf",
+                    isFavorite: "false",
+                    lastAccessedDate: "\(dateTime)",
+                    folderPath: ""
+                )
+                //set pageCount and pdfSize:
+                pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
+                pdfModel.size = fileSize ?? ""
                 
-                if let pageImage = pageImage {
-                    selectedImages.append(pageImage)
-                }
+                navigateToDocumentDetailScreen(pdfDocument: pdfDocument, url: url, pdfModel: pdfModel)
+            }catch{
+                print(error.localizedDescription)
             }
         }
         
-        dispatchGroup.notify(queue: .main) {
-            self.dismiss(animated: true)
-            
-            if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
-                     secondVC.editPDF = .add
-                     secondVC.transferedImage = selectedImages
-                     secondVC.hidesBottomBarWhenPushed = true
-                     self.navigationController?.pushViewController(secondVC, animated: true)
-         
-                 }
-        }
-         
      }
 
      // Delegate method to handle user's cancellation
      func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
          // Handle cancellation if necessary
      }
+    
+    func navigateToDocumentDetailScreen(pdfDocument:PDFDocument, url:URL, pdfModel:PDFinfo){
+        self.dismiss(animated: true)
+        
+        appDelegate.arrPDFinfo.append(pdfModel)
+        appDelegate.setPdfInfoUserDefault()
+        
+        
+        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+            secondVC.editPDF = .edit
+            secondVC.pdfURL = url
+            secondVC.documents = pdfDocument
+            secondVC.modelPDF = pdfModel
+            secondVC.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(secondVC, animated: true)
+        }
+    }
+    
+    func fileSize(fromPath path: String) -> String? {
+        guard let size = try? FileManager.default.attributesOfItem(atPath: path)[FileAttributeKey.size],
+              let fileSize = size as? UInt64 else {
+                  return nil
+              }
+        
+        // bytes
+        if fileSize < 1023 {
+            return String(format: "%lu bytes", CUnsignedLong(fileSize))
+        }
+        // KB
+        var floatSize = Float(fileSize / 1024)
+        if floatSize < 1023 {
+            return String(format: "%.1f KB", floatSize)
+        }
+        // MB
+        floatSize = floatSize / 1024
+        if floatSize < 1023 {
+            return String(format: "%.1f MB", floatSize)
+        }
+        // GB
+        floatSize = floatSize / 1024
+        return String(format: "%.1f GB", floatSize)
+    }
 }

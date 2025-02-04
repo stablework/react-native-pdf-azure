@@ -181,7 +181,17 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let dict = curFile
                 let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
                 alertController.addTextField { (textfield) in
+                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                    let documentDirectory = URL(fileURLWithPath: path)
+                    let originPath = documentDirectory.appendingPathComponent(dict.pdfName)
+                    textfield.text = originPath.deletingPathExtension().lastPathComponent
                     textfield.placeholder = "Enter a new PDF name"
+                    textfield.becomeFirstResponder() // Show keyboard
+                    DispatchQueue.main.async{
+                        if let beginningOfText = textfield.beginningOfDocument as? UITextPosition{
+                            textfield.selectedTextRange = textfield.textRange(from: beginningOfText, to: beginningOfText)
+                        }
+                    }
                 }
                 let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
                    if let newName = alertController.textFields?.first {
@@ -191,11 +201,14 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
                            let documentDirectory = URL(fileURLWithPath: path)
                            let originPath = documentDirectory.appendingPathComponent(dict.pdfName)
-                           let destinationPath = documentDirectory.appendingPathComponent(newPdfName)
+                           var destinationPath = documentDirectory.appendingPathComponent(newPdfName)
+                           if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
+                               destinationPath = destinationPath.appendingPathExtension(originPath.pathExtension)
+                           }
                            try FileManager.default.moveItem(at: originPath, to: destinationPath)
                            
                            if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
-                               appDelegate.arrPDFinfo[index].pdfName = newPdfName
+                               appDelegate.arrPDFinfo[index].pdfName = destinationPath.lastPathComponent
                            }
 
                            self.tblView_documents.reloadData()
@@ -207,8 +220,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
                     
                 }
-                alertController.addAction(doneAction)
                 alertController.addAction(cancelAction)
+                alertController.addAction(doneAction)
                 self.present(alertController, animated: true)
                 
             }),

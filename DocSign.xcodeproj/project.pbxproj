@@ -67,7 +67,6 @@
 		04C81CD1298D313D008FC605 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C81CD0298D313D008FC605 /* SettingsViewController.swift */; };
 		04D60ED029A3337400E7FCBF /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D60ECF29A3337400E7FCBF /* PrivacyPolicyViewController.swift */; };
 		04DACD21299F97BD00426327 /* whatPdfEditorOffers.gif in Resources */ = {isa = PBXBuildFile; fileRef = 04DACD20299F97BD00426327 /* whatPdfEditorOffers.gif */; };
-		04F9371829A0B0A400C306EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F9371729A0B0A400C306EF /* GoogleService-Info.plist */; };
 		84F3D8482D35A2070053A813 /* PDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3D8472D35A1E90053A813 /* PDFViewController.swift */; };
 		8883CEEB2BC938BD005220E4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */; };
 		88D36F6B29A4F01900225810 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D36F6A29A4F01900225810 /* NotificationService.swift */; };
@@ -161,7 +160,6 @@
 		04C81CD0298D313D008FC605 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		04D60ECF29A3337400E7FCBF /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		04DACD20299F97BD00426327 /* whatPdfEditorOffers.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = whatPdfEditorOffers.gif; sourceTree = "<group>"; };
-		04F9371729A0B0A400C306EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		84F3D8472D35A1E90053A813 /* PDFViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewController.swift; sourceTree = "<group>"; };
 		84F3D8492D35C0570053A813 /* abseil-cpp-binary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "abseil-cpp-binary"; path = "/Users/admin/Library/Developer/Xcode/DerivedData/DocSign-bvnohqbdgejrdigtnmcpwreivihz/SourcePackages/checkouts/abseil-cpp-binary"; sourceTree = "<absolute>"; };
 		8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -336,7 +334,6 @@
 				04C81C9B298D0B93008FC605 /* Main.storyboard */,
 				04C81C9E298D0B94008FC605 /* Assets.xcassets */,
 				04C81CA0298D0B94008FC605 /* LaunchScreen.storyboard */,
-				04F9371729A0B0A400C306EF /* GoogleService-Info.plist */,
 				04C81CA3298D0B94008FC605 /* Info.plist */,
 				84F3D8492D35C0570053A813 /* abseil-cpp-binary */,
 				8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */,
@@ -451,7 +448,6 @@
 				04C81C90298D0B93008FC605 /* Resources */,
 				04C81C8F298D0B93008FC605 /* Frameworks */,
 				88D36F7029A4F01900225810 /* Embed Foundation Extensions */,
-				04BF274F29A0958600C52025 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -541,7 +537,6 @@
 				04C81CB6298D1013008FC605 /* Poppins-Bold.ttf in Resources */,
 				04C81C9D298D0B93008FC605 /* Main.storyboard in Resources */,
 				8883CEEB2BC938BD005220E4 /* PrivacyInfo.xcprivacy in Resources */,
-				04F9371829A0B0A400C306EF /* GoogleService-Info.plist in Resources */,
 				04BF278029A09EE900C52025 /* WorkSans-Black.ttf in Resources */,
 				044362E72BC548C400724BFA /* noPDF.json in Resources */,
 				04BF278129A09EE900C52025 /* WorkSans-LightItalic.ttf in Resources */,
@@ -578,28 +573,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		04BF274F29A0958600C52025 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		04C81C8E298D0B93008FC605 /* Sources */ = {
@@ -811,8 +784,9 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
@@ -834,7 +808,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hash.pdf.all;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -854,8 +828,9 @@
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Azure PDF app";
@@ -876,7 +851,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hash.pdf.all;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -894,7 +869,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
@@ -921,7 +896,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7FXC8XSSS7;
+				DEVELOPMENT_TEAM = 763V9H2D3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OneSignalNotificationServiceExtension;

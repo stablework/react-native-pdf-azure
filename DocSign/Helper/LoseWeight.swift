@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import SVProgressHUD
+//import SVProgressHUD
 
 func showIndicator() {
-    SVProgressHUD.show()
+//    SVProgressHUD.show()
 }
 
 func hideIndicator() {
-    SVProgressHUD.dismiss()
+//    SVProgressHUD.dismiss()
 }
 
 

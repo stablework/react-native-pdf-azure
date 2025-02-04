@@ -6,12 +6,12 @@
 //
 
 import UIKit
-import Firebase
-import FirebaseAnalytics
-import FirebaseCrashlytics
-import FirebaseRemoteConfig
+//import Firebase
+//import FirebaseAnalytics
+//import FirebaseCrashlytics
+//import FirebaseRemoteConfig
 import AppTrackingTransparency
-import OneSignalFramework
+//import OneSignalFramework
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,12 +30,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         checkAndFetchToken()
-        FirebaseApp.configure()
+//        FirebaseApp.configure()
       
         
-        OneSignal.Debug.setLogLevel(.LL_VERBOSE)
+//        OneSignal.Debug.setLogLevel(.LL_VERBOSE)
           // OneSignal initialization
-          OneSignal.initialize(ONE_SIGNAL_APP_ID, withLaunchOptions: launchOptions)
+//          OneSignal.initialize(ONE_SIGNAL_APP_ID, withLaunchOptions: launchOptions)
         
         if (launchOptions != nil)
         {
@@ -47,7 +47,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
              }
         }
         dispatchgroup.enter()
-        getRemoteConfig()
+//        getRemoteConfig()
+        self.getPdfInfoUserDefault()
+        self.setHomePage()
         dispatchgroup.notify(queue: .main) {
             self.getPdfInfoUserDefault()
 //            if let isShowIntroScreen = getInt(key: ISSHOWINTROSCREEN), isShowIntroScreen == 1{
@@ -143,44 +145,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 //MARK: - Get Remote Config, Check App version and, Home screen setup method
 extension AppDelegate{
-    func getRemoteConfig(){
-        showIndicator()
-        let remoteConfig = RemoteConfig.remoteConfig()
-        let settings = RemoteConfigSettings()
-        settings.minimumFetchInterval = 0
-        remoteConfig.configSettings = settings
-        
-        remoteConfig.fetch { (status, error) -> Void in
-            if status == .success {
-                remoteConfig.activate { changed, error in
-                    if let dictConfig = RemoteConfig.remoteConfig()
-                        .configValue(forKey: "config_ios").jsonValue as? [String : Any] {
-                        self.modelConfig = ClsRemoteConfig(fromDictionary: dictConfig)
-                        if self.isHideAllAds {
-                            self.modelConfig.isShowiOSAds = false
-                        }
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                            self.requestPermission()
-                            self.dispatchgroup.leave()
-                        }
-                    }else{
-                        hideIndicator()
-                        displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
-                            self.getRemoteConfig()
-                            self.dispatchgroup.leave()
-                        }
-                    }
-                }
-            }else{
-                hideIndicator()
-                displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
-                    self.getRemoteConfig()
-                    self.dispatchgroup.leave()
-                }
-            }
-        }
-    }
+//    func getRemoteConfig(){
+//        showIndicator()
+////        let remoteConfig = RemoteConfig.remoteConfig()
+////        let settings = RemoteConfigSettings()
+//        settings.minimumFetchInterval = 0
+//        remoteConfig.configSettings = settings
+//        
+//        remoteConfig.fetch { (status, error) -> Void in
+//            if status == .success {
+//                remoteConfig.activate { changed, error in
+////                    if let dictConfig = RemoteConfig.remoteConfig()
+//                        .configValue(forKey: "config_ios").jsonValue as? [String : Any] {
+//                        self.modelConfig = ClsRemoteConfig(fromDictionary: dictConfig)
+//                        if self.isHideAllAds {
+//                            self.modelConfig.isShowiOSAds = false
+//                        }
+//
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+////                            self.requestPermission()
+//                            self.dispatchgroup.leave()
+//                        }
+//                    }else{
+//                        hideIndicator()
+//                        displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
+//                            self.getRemoteConfig()
+//                            self.dispatchgroup.leave()
+//                        }
+//                    }
+//                }
+//            }else{
+//                hideIndicator()
+//                displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
+//                    self.getRemoteConfig()
+//                    self.dispatchgroup.leave()
+//                }
+//            }
+//        }
+//    }
     
     func setAppIntro(){
         DispatchQueue.main.async {

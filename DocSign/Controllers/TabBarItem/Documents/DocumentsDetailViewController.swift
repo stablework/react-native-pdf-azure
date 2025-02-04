@@ -11,7 +11,7 @@ import QuickLook
 import PhotosUI
 import VisionKit
 
-struct PDFinfo: Codable {
+struct PDFinfo: Codable, Equatable {
     var title: String
     var size: String
     var dateTime: String
@@ -154,7 +154,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         if editPDF == .add{
             
             //Current time:
-            dateFormatter.dateFormat = "d MMM,yyyy | HH:mm"
+            dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
             let c_dateTime = dateFormatter.string(from: currentDate)
             
             //Replace space(" ") with "_":
@@ -312,7 +312,8 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         let pdfDocument = PDFDocument()
         // Insert the PDF page into your document
-        for index in 0...transferedImage.count - 1 {
+        for index in transferedImage.indices
+        {
             let pdfPage = PDFPage(image: transferedImage[index])
             pdfDocument.insert(pdfPage!, at: index)
         }

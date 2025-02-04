@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import GoogleMobileAds
+//import GoogleMobileAds
 
 //MARK: - GENERAL
 
@@ -41,7 +41,7 @@ let GBInterstitialAdId = appDelegate.isLiveAds ? (appDelegate.modelConfig.iosInt
 let GBRewardID = appDelegate.isLiveAds ? (appDelegate.modelConfig.iosRewardedAds) ?? "" : "ca-app-pub-3940256099942544/1712485313"
 let GBAppOpenID = appDelegate.isLiveAds ? (appDelegate.modelConfig.iosAppOpenAds) ?? "" : "ca-app-pub-3940256099942544/5575463023"
 let GBBannerID =  appDelegate.isLiveAds ? (appDelegate.modelConfig.iosBannerAds) ?? "" : "ca-app-pub-3940256099942544/6300978111"
-let bannerSize = UIDevice.current.userInterfaceIdiom == .pad ? GADAdSizeFullBanner : GADAdSizeBanner
+//let bannerSize = UIDevice.current.userInterfaceIdiom == .pad ? GADAdSizeFullBanner : GADAdSizeBanner
 
 let FeedbackEmail = "app@hash-mob.com"
 let feedbackMessageBody = """

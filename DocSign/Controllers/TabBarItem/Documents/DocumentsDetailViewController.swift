@@ -89,8 +89,9 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     //imagePicker:
     var picker: UIImagePickerController? = UIImagePickerController()
-    var arrImage = [UIImage]()
-    var transferedImage:[UIImage]!
+//    var arrImage = [UIImage]()
+    var pdfURL = URL(string: "")
+//    var transferedImage:[UIImage]!
     
     //userDefaults:
     var defaults = UserDefaults.standard
@@ -152,59 +153,10 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         }
         
         if editPDF == .add{
-            
-            //Current time:
-            dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
-            let c_dateTime = dateFormatter.string(from: currentDate)
-            
-            //Replace space(" ") with "_":
-            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
-            let dateTime = dateFormatter.string(from: currentDate)
-            
-            let finalFileName = pdfNewName.isEmpty ? "PDF \(c_dateTime)" : pdfNewName
-            let formattedFileName = finalFileName.replacingOccurrences(of: " ", with: "_")
-
-            // Construct document directory path
-            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let docURL = documentDirectory.appendingPathComponent(finalFileName)
-
-            // Check if file exists and assign to pdfView
-            if FileManager.default.fileExists(atPath: docURL.path) {
-                pdfView.document = PDFDocument(url: docURL)
-            }
-
-            // Get file size
-            let fileSize = fileSize(fromPath: "\(docURL.path)")
-
-            // Create PDFinfo model
-            let pdfModel = PDFinfo(
-                title: finalFileName,
-                size: "\(fileSize ?? "")",
-                dateTime: "\(c_dateTime)",
-                pageCount: "\("") page",
-                pdfName: "\(formattedFileName).pdf",
-                isFavorite: "false",
-                lastAccessedDate: "\(dateTime)",
-                folderPath: curFolderPath
-                
-            )
-
-            self.modelPDF = pdfModel
-            
-            print(pdfModel)
-            print("title:\(pdfModel.title)")
-            print("size:\(pdfModel.size)")
-            print("dateTime:\(pdfModel.dateTime)")
-            print("pgCount:\(pdfModel.pageCount)")
-            print("pdfName:\(pdfModel.pdfName)")
-            
-            //For fit image in pdfView:
-            //pdfView.usePageViewController(true, withViewOptions: nil)
-            
             self.lbl_title.text = "\(modelPDF.title)"
-            self.createPDF()
             self.displayPdf()
             editPDF = .edit
+            pdfView.document = documents
             //self.imagePickerControllerDidCancel(picker!)
             
         }
@@ -308,46 +260,46 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     //    }
     
     //MARK: - Functions
-    func createPDF(){
-        
-        let pdfDocument = PDFDocument()
-        // Insert the PDF page into your document
-        for index in transferedImage.indices
-        {
-            let pdfPage = PDFPage(image: transferedImage[index])
-            pdfDocument.insert(pdfPage!, at: index)
-        }
-        
-        
-        
-        let data = pdfDocument.dataRepresentation()
+//    func createPDF(){
 //        
-//        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        let pdfDocument = PDFDocument()
+//        // Insert the PDF page into your document
+//        for index in transferedImage.indices
+//        {
+//            let pdfPage = PDFPage(image: transferedImage[index])
+//            pdfDocument.insert(pdfPage!, at: index)
+//        }
 //        
-//        let docURL = documentDirectory.appendingPathComponent()
-        
-            let documentDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
-            let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
-
-           
+//        
+//        
+//        let data = pdfDocument.dataRepresentation()
+////        
+////        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+////        
+////        let docURL = documentDirectory.appendingPathComponent()
+//        
+//            let documentDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
+//            let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
 //
-//     // true
-        
-        print("createURL:\(docURL)")
-        
-        do{
-            try data?.write(to: docURL)
-        }catch(let error){
-            print("error is \(error.localizedDescription)")
-        }
-        
-        //set pageCount and pdfSize:
-        modelPDF.pageCount = "\((pdfView.document?.pageCount) ?? 1) page"
-        modelPDF.size = "\(fileSize(fromPath: "\(docURL.path)") ?? "")"
-        
-        appDelegate.arrPDFinfo.append(self.modelPDF)
-        appDelegate.setPdfInfoUserDefault()
-    }
+//           
+////
+////     // true
+//        
+//        print("createURL:\(docURL)")
+//        
+//        do{
+//            try data?.write(to: docURL)
+//        }catch(let error){
+//            print("error is \(error.localizedDescription)")
+//        }
+//        
+//        //set pageCount and pdfSize:
+//        modelPDF.pageCount = "\((pdfView.document?.pageCount) ?? 1) page"
+//        modelPDF.size = "\(fileSize(fromPath: "\(docURL.path)") ?? "")"
+//        
+//        appDelegate.arrPDFinfo.append(self.modelPDF)
+//        appDelegate.setPdfInfoUserDefault()
+//    }
     
     func comeFromCellPDF(){
         
@@ -622,7 +574,7 @@ extension DocumentsDetailViewController : PHPickerViewControllerDelegate {
         let dispatchGroup = DispatchGroup()
         
         var selectedImages:[UIImage] = [UIImage]()
-
+        
         
         for result in results {
             dispatchGroup.enter()
@@ -638,13 +590,12 @@ extension DocumentsDetailViewController : PHPickerViewControllerDelegate {
         
         dispatchGroup.notify(queue: .main) {
             self.dismiss(animated: true)
-//
+            //
             for image in selectedImages{
                 let pdfPage = PDFPage(image: image)
                 // Insert the PDF page into your document
                 self.pdfView.document?.insert(pdfPage!, at: self.pdfView.document?.pageCount ?? 0)
             }
-           
             
             //Set pageController -> pages count = image count:
             self.pageController.numberOfPages = self.pdfView.document?.pageCount ?? 0
@@ -667,7 +618,6 @@ extension DocumentsDetailViewController: VNDocumentCameraViewControllerDelegate 
         // Process the scanned pages
         let dispatchGroup = DispatchGroup()
         
-        var selectedImages:[UIImage] = [UIImage]()
         var lastImage:UIImage!
         for pageNumber in 0..<scan.pageCount {
             dispatchGroup.enter()
@@ -701,28 +651,28 @@ extension DocumentsDetailViewController: UIDocumentPickerDelegate {
         let dispatchGroup = DispatchGroup()
         
         var selectedImages:[UIImage] = [UIImage]()
-                for url in urls {
-                    dispatchGroup.enter()
-                    do {
-                        let imageData = try Data(contentsOf: url)
-                        if let image = UIImage(data: imageData) {
-                            selectedImages.append(image)
-                        }
-                    } catch {
-                        print("Error loading image at \(url): \(error.localizedDescription)")
-                    }
-                    dispatchGroup.leave()
+        for url in urls {
+            dispatchGroup.enter()
+            do {
+                let imageData = try Data(contentsOf: url)
+                if let image = UIImage(data: imageData) {
+                    selectedImages.append(image)
                 }
-                
+            } catch {
+                print("Error loading image at \(url): \(error.localizedDescription)")
+            }
+            dispatchGroup.leave()
+        }
+        
         dispatchGroup.notify(queue: .main) {
             self.dismiss(animated: true)
-//
+            //
             for image in selectedImages{
                 let pdfPage = PDFPage(image: image)
                 // Insert the PDF page into your document
                 self.pdfView.document?.insert(pdfPage!, at: self.pdfView.document?.pageCount ?? 0)
             }
-           
+            
             
             //Set pageController -> pages count = image count:
             self.pageController.numberOfPages = self.pdfView.document?.pageCount ?? 0
@@ -735,7 +685,4 @@ extension DocumentsDetailViewController: UIDocumentPickerDelegate {
             self.displayPdf()
         }
     }
-
-     
-     
 }

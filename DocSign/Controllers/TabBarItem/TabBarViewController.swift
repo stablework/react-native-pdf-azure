@@ -169,12 +169,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
     }
     
     func openFileManager() {
-        
         let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf], asCopy: true)
         documentPicker.allowsMultipleSelection = true
         documentPicker.delegate = self
-                documentPicker.allowsMultipleSelection = false
-                present(documentPicker, animated: true, completion: nil)
+        documentPicker.allowsMultipleSelection = false
+        present(documentPicker, animated: true, completion: nil)
         
     }
     
@@ -343,6 +342,7 @@ extension TabBarViewController:VNDocumentCameraViewControllerDelegate {
         let dispatchGroup = DispatchGroup()
         
         var selectedImages:[UIImage] = [UIImage]()
+        
         var lastImage:UIImage!
         for pageNumber in 0..<scan.pageCount {
             dispatchGroup.enter()
@@ -376,41 +376,27 @@ extension TabBarViewController: UIDocumentPickerDelegate {
         var selectedImages:[UIImage] = [UIImage]()
         
         if let url = urls.first {
-                  
-                   pdfDocument = PDFDocument(url: url)
+            
+            pdfDocument = PDFDocument(url: url)
             for pageIndex in 0..<pdfDocument.pageCount {
-                        guard let pdfPage = pdfDocument.page(at: pageIndex) else { continue }
-
-                        // Render PDF page as image
-                        let pageRect = pdfPage.bounds(for: .cropBox)
-                        UIGraphicsBeginImageContext(pageRect.size)
-                        guard let context = UIGraphicsGetCurrentContext() else { return }
-                        context.translateBy(x: 0.0, y: pageRect.size.height)
-                        context.scaleBy(x: 1.0, y: -1.0)
-                        pdfPage.draw(with: .mediaBox, to: context)
-                        let pageImage = UIGraphicsGetImageFromCurrentImageContext()
-                        UIGraphicsEndImageContext()
-
-                        if let pageImage = pageImage {
-                            selectedImages.append(pageImage)
-                        }
-                    }
-                   
-               }
-//                for url in urls {
-//                    dispatchGroup.enter()
-//                    do {
-//                        let imageData = try Data(contentsOf: url)
-//                        if let image = UIImage(data: imageData) {
-//                            selectedImages.append(image)
-//                        }
-//                    } catch {
-//                        print("Error loading image at \(url): \(error.localizedDescription)")
-//                    }
-//                    dispatchGroup.leave()
-//                }
-        
+                guard let pdfPage = pdfDocument.page(at: pageIndex) else { continue }
                 
+                // Render PDF page as image
+                let pageRect = pdfPage.bounds(for: .mediaBox)
+                UIGraphicsBeginImageContextWithOptions(pageRect.size, false, 0.0)
+                guard let context = UIGraphicsGetCurrentContext() else { return }
+                context.translateBy(x: 0.0, y: pageRect.size.height)
+                context.scaleBy(x: 1.0, y: -1.0)
+                pdfPage.draw(with: .mediaBox, to: context)
+                let pageImage = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                
+                if let pageImage = pageImage {
+                    selectedImages.append(pageImage)
+                }
+            }
+        }
+        
         dispatchGroup.notify(queue: .main) {
             self.dismiss(animated: true)
             

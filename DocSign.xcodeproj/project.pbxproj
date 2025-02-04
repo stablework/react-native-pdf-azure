@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0416D570299DE5EF00886254 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416D56F299DE5EF00886254 /* SettingsTableViewCell.swift */; };
 		044362E22BC53C4700724BFA /* PdfViewVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044362E12BC53C4700724BFA /* PdfViewVM.swift */; };
-		044362E52BC5466E00724BFA /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 044362E42BC5466E00724BFA /* Lottie */; };
 		044362E72BC548C400724BFA /* noPDF.json in Resources */ = {isa = PBXBuildFile; fileRef = 044362E62BC548C400724BFA /* noPDF.json */; };
 		0486C0A7298E106100B688A2 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0486C0A6298E106100B688A2 /* UIViewController+Extension.swift */; };
 		0486C0AA298E110900B688A2 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0486C0A9298E110900B688A2 /* TabBarViewController.swift */; };
@@ -71,18 +70,8 @@
 		04F9371829A0B0A400C306EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F9371729A0B0A400C306EF /* GoogleService-Info.plist */; };
 		84F3D8482D35A2070053A813 /* PDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3D8472D35A1E90053A813 /* PDFViewController.swift */; };
 		8883CEEB2BC938BD005220E4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */; };
-		889CA3E12BC92DEE00B98A36 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3E02BC92DEE00B98A36 /* FirebaseAnalyticsSwift */; };
-		889CA3E32BC92DEE00B98A36 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3E22BC92DEE00B98A36 /* FirebaseCrashlytics */; };
-		889CA3E52BC92DEE00B98A36 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3E42BC92DEE00B98A36 /* FirebaseMessaging */; };
-		889CA3E72BC92DEE00B98A36 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3E62BC92DEE00B98A36 /* FirebaseRemoteConfigSwift */; };
-		889CA3EA2BC92E7900B98A36 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3E92BC92E7900B98A36 /* GoogleMobileAds */; };
-		889CA3ED2BC92EC300B98A36 /* SVProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3EC2BC92EC300B98A36 /* SVProgressHUD */; };
-		889CA3F02BC9309A00B98A36 /* OneSignalExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3EF2BC9309A00B98A36 /* OneSignalExtension */; };
-		889CA3F22BC9309A00B98A36 /* OneSignalFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3F12BC9309A00B98A36 /* OneSignalFramework */; };
-		889CA3F42BC9309A00B98A36 /* OneSignalInAppMessages in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3F32BC9309A00B98A36 /* OneSignalInAppMessages */; };
-		889CA3F62BC9309A00B98A36 /* OneSignalLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 889CA3F52BC9309A00B98A36 /* OneSignalLocation */; };
 		88D36F6B29A4F01900225810 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D36F6A29A4F01900225810 /* NotificationService.swift */; };
-		88D36F6F29A4F01900225810 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 88D36F6829A4F01800225810 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		88D36F6F29A4F01900225810 /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 88D36F6829A4F01800225810 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,15 +85,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		88D36F7029A4F01900225810 /* Embed App Extensions */ = {
+		88D36F7029A4F01900225810 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				88D36F6F29A4F01900225810 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */,
+				88D36F6F29A4F01900225810 /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -192,16 +181,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				889CA3F42BC9309A00B98A36 /* OneSignalInAppMessages in Frameworks */,
-				889CA3E12BC92DEE00B98A36 /* FirebaseAnalyticsSwift in Frameworks */,
-				889CA3E32BC92DEE00B98A36 /* FirebaseCrashlytics in Frameworks */,
-				889CA3E52BC92DEE00B98A36 /* FirebaseMessaging in Frameworks */,
-				889CA3F62BC9309A00B98A36 /* OneSignalLocation in Frameworks */,
-				889CA3E72BC92DEE00B98A36 /* FirebaseRemoteConfigSwift in Frameworks */,
-				889CA3ED2BC92EC300B98A36 /* SVProgressHUD in Frameworks */,
-				044362E52BC5466E00724BFA /* Lottie in Frameworks */,
-				889CA3F22BC9309A00B98A36 /* OneSignalFramework in Frameworks */,
-				889CA3EA2BC92E7900B98A36 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,7 +188,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				889CA3F02BC9309A00B98A36 /* OneSignalExtension in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,7 +450,7 @@
 				04C81C8E298D0B93008FC605 /* Sources */,
 				04C81C90298D0B93008FC605 /* Resources */,
 				04C81C8F298D0B93008FC605 /* Frameworks */,
-				88D36F7029A4F01900225810 /* Embed App Extensions */,
+				88D36F7029A4F01900225810 /* Embed Foundation Extensions */,
 				04BF274F29A0958600C52025 /* ShellScript */,
 			);
 			buildRules = (
@@ -486,16 +464,6 @@
 			);
 			name = DocSign;
 			packageProductDependencies = (
-				044362E42BC5466E00724BFA /* Lottie */,
-				889CA3E02BC92DEE00B98A36 /* FirebaseAnalyticsSwift */,
-				889CA3E22BC92DEE00B98A36 /* FirebaseCrashlytics */,
-				889CA3E42BC92DEE00B98A36 /* FirebaseMessaging */,
-				889CA3E62BC92DEE00B98A36 /* FirebaseRemoteConfigSwift */,
-				889CA3E92BC92E7900B98A36 /* GoogleMobileAds */,
-				889CA3EC2BC92EC300B98A36 /* SVProgressHUD */,
-				889CA3F12BC9309A00B98A36 /* OneSignalFramework */,
-				889CA3F32BC9309A00B98A36 /* OneSignalInAppMessages */,
-				889CA3F52BC9309A00B98A36 /* OneSignalLocation */,
 			);
 			productName = DocSign;
 			productReference = 04C81C92298D0B93008FC605 /* DocSign.app */;
@@ -515,7 +483,6 @@
 			);
 			name = OneSignalNotificationServiceExtension;
 			packageProductDependencies = (
-				889CA3EF2BC9309A00B98A36 /* OneSignalExtension */,
 			);
 			productName = OneSignalNotificationServiceExtension;
 			productReference = 88D36F6829A4F01800225810 /* OneSignalNotificationServiceExtension.appex */;
@@ -529,7 +496,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1320;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					04C81C91298D0B93008FC605 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -549,11 +516,6 @@
 			);
 			mainGroup = 04C81C89298D0B92008FC605;
 			packageReferences = (
-				044362E32BC5466E00724BFA /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				889CA3E82BC92E7900B98A36 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
-				889CA3EB2BC92EC300B98A36 /* XCRemoteSwiftPackageReference "SVProgressHUD" */,
-				889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */,
 			);
 			productRefGroup = 04C81C93298D0B93008FC605 /* Products */;
 			projectDirPath = "";
@@ -717,6 +679,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -750,6 +717,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -778,6 +746,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64,
+					x86_64,
+				);
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -811,6 +784,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -832,14 +806,13 @@
 		04C81CA7298D0B94008FC605 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = 763V9H2D3T;
+				DEVELOPMENT_TEAM = 7FXC8XSSS7;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
@@ -861,7 +834,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hash.pdf.all;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -876,14 +849,13 @@
 		04C81CA8298D0B94008FC605 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = DocSign/DocSign.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = 763V9H2D3T;
+				DEVELOPMENT_TEAM = 7FXC8XSSS7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DocSign/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Azure PDF app";
@@ -904,7 +876,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hash.pdf.all;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -922,7 +894,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 763V9H2D3T;
+				DEVELOPMENT_TEAM = 7FXC8XSSS7;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
@@ -934,7 +906,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pdfazure.cookerapp.OneSignalNotificationServiceExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hash.pdf.all.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -949,7 +921,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 763V9H2D3T;
+				DEVELOPMENT_TEAM = 7FXC8XSSS7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OneSignalNotificationServiceExtension;
@@ -1000,107 +972,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		044362E32BC5466E00724BFA /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.4.2;
-			};
-		};
-		889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.24.0;
-			};
-		};
-		889CA3E82BC92E7900B98A36 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.3.0;
-			};
-		};
-		889CA3EB2BC92EC300B98A36 /* XCRemoteSwiftPackageReference "SVProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SVProgressHUD/SVProgressHUD.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.3.1;
-			};
-		};
-		889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/OneSignal/OneSignal-XCFramework";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.4;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		044362E42BC5466E00724BFA /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 044362E32BC5466E00724BFA /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
-		};
-		889CA3E02BC92DEE00B98A36 /* FirebaseAnalyticsSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsSwift;
-		};
-		889CA3E22BC92DEE00B98A36 /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		889CA3E42BC92DEE00B98A36 /* FirebaseMessaging */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseMessaging;
-		};
-		889CA3E62BC92DEE00B98A36 /* FirebaseRemoteConfigSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3DF2BC92DEE00B98A36 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseRemoteConfigSwift;
-		};
-		889CA3E92BC92E7900B98A36 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3E82BC92E7900B98A36 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
-		};
-		889CA3EC2BC92EC300B98A36 /* SVProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3EB2BC92EC300B98A36 /* XCRemoteSwiftPackageReference "SVProgressHUD" */;
-			productName = SVProgressHUD;
-		};
-		889CA3EF2BC9309A00B98A36 /* OneSignalExtension */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
-			productName = OneSignalExtension;
-		};
-		889CA3F12BC9309A00B98A36 /* OneSignalFramework */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
-			productName = OneSignalFramework;
-		};
-		889CA3F32BC9309A00B98A36 /* OneSignalInAppMessages */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
-			productName = OneSignalInAppMessages;
-		};
-		889CA3F52BC9309A00B98A36 /* OneSignalLocation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 889CA3EE2BC9309A00B98A36 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
-			productName = OneSignalLocation;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 04C81C8A298D0B92008FC605 /* Project object */;
 }

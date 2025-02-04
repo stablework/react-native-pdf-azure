@@ -9,14 +9,14 @@ import UIKit
 import PDFKit
 
 import QuickLook
-import Lottie
+//import Lottie
 
 class DocumentsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
 
 //MARK: - Outlets
     @IBOutlet weak var tblView_documents: UITableView!
     @IBOutlet weak var view_noDocumentsAdded: UIView!
-    @IBOutlet weak var img_noDocuments: LottieAnimationView!
+//    @IBOutlet weak var img_noDocuments: LottieAnimationView!
     @IBOutlet weak var lbl_title: UILabel!{
         didSet{
             lbl_title.text = "You don't have any documents!"
@@ -76,11 +76,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.tblView_documents.reloadData()
         
-        img_noDocuments?.animation = .named("noPDF")
-         
-        img_noDocuments!.loopMode = .loop
-         
-        img_noDocuments!.play()
+//        img_noDocuments?.animation = .named("noPDF")
+//         
+//        img_noDocuments!.loopMode = .loop
+//         
+//        img_noDocuments!.play()
         
         tblView_documents.separatorStyle = .singleLine
         tblView_documents.separatorColor = UIColor.gray
@@ -649,7 +649,21 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             (action: UIAlertAction!) in
             
             //On click YES button data is removed:
-            appDelegate.arrPDFinfo.remove(at: indexPath.section)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+            let sortedPdfArray = appDelegate.arrPDFinfo.sorted { (pdf1, pdf2) -> Bool in
+                guard let date1 = dateFormatter.date(from: pdf1.lastAccessedDate),
+                      let date2 = dateFormatter.date(from: pdf2.lastAccessedDate) else {
+                    return false
+                }
+                return date1 > date2 // Ascending order: change to date1 > date2 for descending order
+            }
+            
+            let dict = sortedPdfArray[indexPath.row]
+            if let deleteIndex = appDelegate.arrPDFinfo.firstIndex(of: dict){
+                appDelegate.arrPDFinfo.remove(at: deleteIndex)
+            }
+
             appDelegate.setPdfInfoUserDefault()
             self.tblView_documents.reloadData()
             

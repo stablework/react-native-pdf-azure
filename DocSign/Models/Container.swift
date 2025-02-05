@@ -50,10 +50,20 @@ struct Container: Codable {
     }
 }
 
+// Define the Container model that contains the Name and Properties
+struct ContainerName: Codable {
+    let containerName: [Container]
+    
+    // Coding Keys to map XML element names to Swift property names
+    private enum CodingKeys: String, CodingKey {
+        case containerName = "Container"
+    }
+}
+
 // Define the root model EnumerationResults which contains the ServiceEndpoint and Containers
 struct EnumerationResults: Codable {
     let serviceEndpoint: String
-    let containers: [Container]
+    let containers: [ContainerName]
 
     // Coding Keys to match XML structure
     private enum CodingKeys: String, CodingKey {

@@ -150,7 +150,7 @@ class ApiService: NSObject, XMLParserDelegate  {
             do {
                 let enumerationResults = try decoder.decode(EnumerationResults.self, from: data)
                 print(enumerationResults)
-                completion(.success(enumerationResults.containers))
+                completion(.success(enumerationResults.containers.first?.containerName ?? []))
             } catch {
                 completion(.failure(ApiError.parsingFailed))
                 print("Error decoding XML: \(error)")
@@ -213,15 +213,15 @@ class ApiService: NSObject, XMLParserDelegate  {
     }
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        if elementName == "Container" {
-            let container = Container(
-                name: currentContainerName,
-                etag: currentContainerEtag,
-                leaseStatus: currentContainerLeaseStatus
-            )
-            containers.append(container)
-        }
-        currentElement = ""
+//        if elementName == "Container" {
+//            let container = Container(
+//                name: currentContainerName,
+//                etag: currentContainerEtag,
+//                leaseStatus: currentContainerLeaseStatus
+//            )
+//            containers.append(container)
+//        }
+//        currentElement = ""
     }
     
     // API Errors

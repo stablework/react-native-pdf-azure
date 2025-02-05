@@ -72,7 +72,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
     }
     
     override func viewDidLayoutSubviews() {
-        self.setupMiddleButton()
+//        self.setupMiddleButton()
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {

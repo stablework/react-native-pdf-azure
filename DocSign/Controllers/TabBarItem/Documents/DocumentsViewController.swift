@@ -284,10 +284,10 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     }
                 })
                 ,
-            UIAction(title: "Delete",image: UIImage(systemName: "trash.fill"),attributes: .destructive ,handler: { _ in
-//                let dict = appDelegate.arrPDFinfo.filter { $0.folderPath == self.currentFolderPath }[indexPath.row]
-                self.simpleAlert(vc: self, title: "PDF Editor", message: "Are you sure you want to delete \(curFile.pdfName)?", indexPath: indexPath)
-            })
+//            UIAction(title: "Delete",image: UIImage(systemName: "trash.fill"),attributes: .destructive ,handler: { _ in
+////                let dict = appDelegate.arrPDFinfo.filter { $0.folderPath == self.currentFolderPath }[indexPath.row]
+//                self.simpleAlert(vc: self, title: "PDF Editor", message: "Are you sure you want to delete \(curFile.pdfName)?", indexPath: indexPath)
+//            })
         ])
             
         return itemMenu

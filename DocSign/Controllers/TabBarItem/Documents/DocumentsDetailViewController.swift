@@ -56,6 +56,10 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     @IBOutlet weak var btn_delete: UIButton!
     @IBOutlet weak var btn_txtDelete: UIButton!
     
+    @IBOutlet weak var btnMainPrint: UIButton!
+    @IBOutlet weak var btn_Print: UIButton!
+    @IBOutlet weak var btn_Print_Text: UIButton!
+    
     @IBOutlet weak var btn_back: UIButton!
     
     @IBOutlet weak var btn_edit: UIButton!
@@ -132,10 +136,12 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         self.btn_text.isUserInteractionEnabled = false
         self.btn_delete.isUserInteractionEnabled = false
+        self.btn_Print.isUserInteractionEnabled = false
         self.btn_txtAdd.isUserInteractionEnabled = false
         self.btn_txtShare.isUserInteractionEnabled = false
         
         self.btn_txtDelete.isUserInteractionEnabled = false
+        self.btn_Print_Text.isUserInteractionEnabled = false
         
         self.pdfView.delegate = self
         

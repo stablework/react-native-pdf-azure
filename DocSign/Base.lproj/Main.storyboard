@@ -485,42 +485,44 @@
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EYD-QD-VPU">
-                                                <rect key="frame" x="314" y="10" width="90" height="45"/>
+                                                <rect key="frame" x="354" y="10" width="50" height="45"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dgg-1S-g0s">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="tG9-RE-vXf">
                                                         <rect key="frame" x="10" y="5" width="30" height="35"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="35" id="B88-5P-mFG"/>
-                                                        </constraints>
-                                                        <color key="tintColor" name="app_themeColor"/>
-                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" image="ic_signature"/>
-                                                        <connections>
-                                                            <action selector="btn_edit:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="ppg-5J-cth"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ZM-DU-dUX">
-                                                        <rect key="frame" x="50" y="5" width="30" height="35"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="35" id="MPn-uq-GOI"/>
-                                                        </constraints>
-                                                        <color key="tintColor" name="app_themeColor"/>
-                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                        <state key="normal" image="ic_printer"/>
-                                                        <connections>
-                                                            <action selector="btn_printer:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="V3g-FL-hR9"/>
-                                                        </connections>
-                                                    </button>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dgg-1S-g0s">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="35"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="35" id="B88-5P-mFG"/>
+                                                                </constraints>
+                                                                <color key="tintColor" name="app_themeColor"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <state key="normal" image="ic_signature"/>
+                                                                <connections>
+                                                                    <action selector="btn_edit:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="ppg-5J-cth"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ZM-DU-dUX">
+                                                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="35"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="35" id="MPn-uq-GOI"/>
+                                                                </constraints>
+                                                                <color key="tintColor" name="app_themeColor"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <state key="normal" image="ic_printer"/>
+                                                                <connections>
+                                                                    <action selector="btn_printer:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="V3g-FL-hR9"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                    </stackView>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
-                                                    <constraint firstItem="dgg-1S-g0s" firstAttribute="bottom" secondItem="8ZM-DU-dUX" secondAttribute="bottom" id="7yt-ag-nn7"/>
-                                                    <constraint firstItem="8ZM-DU-dUX" firstAttribute="leading" secondItem="dgg-1S-g0s" secondAttribute="trailing" constant="10" id="CQW-JB-BYE"/>
-                                                    <constraint firstItem="dgg-1S-g0s" firstAttribute="top" secondItem="8ZM-DU-dUX" secondAttribute="top" id="MRe-K3-HfP"/>
-                                                    <constraint firstAttribute="trailing" secondItem="8ZM-DU-dUX" secondAttribute="trailing" constant="10" id="Opv-Mr-SEk"/>
-                                                    <constraint firstItem="dgg-1S-g0s" firstAttribute="top" secondItem="EYD-QD-VPU" secondAttribute="top" constant="5" id="QnH-Oq-iP6"/>
-                                                    <constraint firstItem="dgg-1S-g0s" firstAttribute="leading" secondItem="EYD-QD-VPU" secondAttribute="leading" constant="10" id="S9D-OV-tYA"/>
-                                                    <constraint firstAttribute="bottom" secondItem="dgg-1S-g0s" secondAttribute="bottom" constant="5" id="zNc-hX-vqB"/>
+                                                    <constraint firstAttribute="bottom" secondItem="tG9-RE-vXf" secondAttribute="bottom" constant="5" id="0h6-HO-Sys"/>
+                                                    <constraint firstAttribute="trailing" secondItem="tG9-RE-vXf" secondAttribute="trailing" constant="10" id="3EE-f2-eHP"/>
+                                                    <constraint firstItem="tG9-RE-vXf" firstAttribute="leading" secondItem="EYD-QD-VPU" secondAttribute="leading" constant="10" id="Zh7-tn-aJW"/>
+                                                    <constraint firstItem="tG9-RE-vXf" firstAttribute="top" secondItem="EYD-QD-VPU" secondAttribute="top" constant="5" id="eyp-gm-gwG"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6nE-8y-k0X">
@@ -682,18 +684,18 @@
                                                             <constraint firstAttribute="trailing" secondItem="RxV-l7-ZlI" secondAttribute="trailing" id="ySH-gB-G7u"/>
                                                         </constraints>
                                                     </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ds9-ze-vud">
-                                                        <rect key="frame" x="262.5" y="0.0" width="131.5" height="60"/>
+                                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ds9-ze-vud">
+                                                        <rect key="frame" x="262.5" y="0.0" width="20" height="60"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U0p-sz-pVu">
-                                                                <rect key="frame" x="10" y="0.0" width="111.5" height="60"/>
+                                                                <rect key="frame" x="10" y="0.0" width="0.0" height="60"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                 <connections>
                                                                     <action selector="btn_mainDelete:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="jrT-bI-dFK"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ivz-nr-ZJB">
-                                                                <rect key="frame" x="0.0" y="0.0" width="131.5" height="40"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="20" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="0S9-kV-Uka"/>
                                                                 </constraints>
@@ -703,7 +705,7 @@
                                                                 <state key="selected" image="ic_delete"/>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ItS-xe-FnS">
-                                                                <rect key="frame" x="0.0" y="40" width="131.5" height="20"/>
+                                                                <rect key="frame" x="0.0" y="40" width="20" height="20"/>
                                                                 <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
                                                                 <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -723,6 +725,49 @@
                                                             <constraint firstItem="ivz-nr-ZJB" firstAttribute="top" secondItem="Ds9-ze-vud" secondAttribute="top" id="g61-Hl-Fu7"/>
                                                             <constraint firstAttribute="bottom" secondItem="ItS-xe-FnS" secondAttribute="bottom" id="gtQ-Hk-MnY"/>
                                                             <constraint firstAttribute="bottom" secondItem="U0p-sz-pVu" secondAttribute="bottom" id="m5c-2u-EGP"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dZ6-Lw-shE">
+                                                        <rect key="frame" x="262.5" y="0.0" width="131.5" height="60"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p2p-mK-eHq">
+                                                                <rect key="frame" x="10" y="0.0" width="111.5" height="60"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <connections>
+                                                                    <action selector="btn_printer:" destination="BwG-QG-Zwv" eventType="touchUpInside" id="I8w-YH-FGl"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E7B-LX-Xl4">
+                                                                <rect key="frame" x="0.0" y="0.0" width="131.5" height="40"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="40" id="ZEF-Ny-Tze"/>
+                                                                </constraints>
+                                                                <color key="tintColor" name="app_themeColor"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <state key="normal" image="ic_printer"/>
+                                                                <state key="selected" image="ic_printer"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z1c-RI-L71">
+                                                                <rect key="frame" x="0.0" y="40" width="131.5" height="20"/>
+                                                                <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="15"/>
+                                                                <color key="tintColor" name="app_themeColor"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <state key="normal" title="Print"/>
+                                                            </button>
+                                                        </subviews>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="trailing" secondItem="E7B-LX-Xl4" secondAttribute="trailing" id="09f-Hy-mSL"/>
+                                                            <constraint firstItem="E7B-LX-Xl4" firstAttribute="leading" secondItem="dZ6-Lw-shE" secondAttribute="leading" id="9yl-CF-njw"/>
+                                                            <constraint firstItem="Z1c-RI-L71" firstAttribute="top" secondItem="E7B-LX-Xl4" secondAttribute="bottom" id="Esx-30-sF3"/>
+                                                            <constraint firstItem="E7B-LX-Xl4" firstAttribute="top" secondItem="dZ6-Lw-shE" secondAttribute="top" id="FyS-U3-vcp"/>
+                                                            <constraint firstAttribute="trailing" secondItem="Z1c-RI-L71" secondAttribute="trailing" id="Jig-Wp-Nzi"/>
+                                                            <constraint firstItem="p2p-mK-eHq" firstAttribute="leading" secondItem="dZ6-Lw-shE" secondAttribute="leading" constant="10" id="YJ4-1f-7ez"/>
+                                                            <constraint firstAttribute="trailing" secondItem="p2p-mK-eHq" secondAttribute="trailing" constant="10" id="Z8R-V0-RPi"/>
+                                                            <constraint firstAttribute="bottom" secondItem="p2p-mK-eHq" secondAttribute="bottom" id="b3W-HP-yhc"/>
+                                                            <constraint firstItem="Z1c-RI-L71" firstAttribute="leading" secondItem="dZ6-Lw-shE" secondAttribute="leading" id="gPU-an-aAq"/>
+                                                            <constraint firstItem="p2p-mK-eHq" firstAttribute="top" secondItem="dZ6-Lw-shE" secondAttribute="top" id="tjF-UF-YxF"/>
+                                                            <constraint firstAttribute="bottom" secondItem="Z1c-RI-L71" secondAttribute="bottom" id="w0G-rh-hDS"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
@@ -787,6 +832,9 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnMainPrint" destination="p2p-mK-eHq" id="hWw-Ob-U0a"/>
+                        <outlet property="btn_Print" destination="E7B-LX-Xl4" id="9PB-at-K5U"/>
+                        <outlet property="btn_Print_Text" destination="Z1c-RI-L71" id="vqV-Tr-2We"/>
                         <outlet property="btn_add" destination="OvX-7J-0VE" id="yOb-YB-qWQ"/>
                         <outlet property="btn_back" destination="U1f-TF-H0I" id="9HI-ro-oiQ"/>
                         <outlet property="btn_delete" destination="ivz-nr-ZJB" id="83A-Bt-90f"/>

@@ -30,37 +30,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         checkAndFetchToken()
-//        FirebaseApp.configure()
-      
+        //        FirebaseApp.configure()
         
-//        OneSignal.Debug.setLogLevel(.LL_VERBOSE)
-          // OneSignal initialization
-//          OneSignal.initialize(ONE_SIGNAL_APP_ID, withLaunchOptions: launchOptions)
+        
+        //        OneSignal.Debug.setLogLevel(.LL_VERBOSE)
+        // OneSignal initialization
+        //          OneSignal.initialize(ONE_SIGNAL_APP_ID, withLaunchOptions: launchOptions)
         
         if (launchOptions != nil)
         {
             let dictionary:NSDictionary = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as! NSDictionary
             if let info = dictionary["custom"] as? Dictionary<String, AnyObject>,let stringUrl = info["u"] as? String{
-                 print(dictionary)
-                 guard let url = URL(string: stringUrl) else { return true}
-                 UIApplication.shared.open(url)
-             }
+                print(dictionary)
+                guard let url = URL(string: stringUrl) else { return true}
+                UIApplication.shared.open(url)
+            }
         }
         dispatchgroup.enter()
-//        getRemoteConfig()
+        //        getRemoteConfig()
         self.getPdfInfoUserDefault()
         self.setHomePage()
         dispatchgroup.notify(queue: .main) {
             self.getPdfInfoUserDefault()
-//            if let isShowIntroScreen = getInt(key: ISSHOWINTROSCREEN), isShowIntroScreen == 1{
-                self.setHomePage()
-//            }
+            //            if let isShowIntroScreen = getInt(key: ISSHOWINTROSCREEN), isShowIntroScreen == 1{
+            self.setHomePage()
+            //            }
             
-//            else{
-//                self.setAppIntro()
-//            }
+            //            else{
+            //                self.setAppIntro()
+            //            }
         }
-       
+        
         //sleep(2)
         return true
     }
@@ -118,29 +118,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func checkAndFetchToken() {
-            // Check if the token is valid
-            if !ApiService.shared.isTokenValid() {
-                let tenantID = tenantID
-                let clientID = clientID
-                let clientSecret = clientSecret
-                
-                ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
-                    switch result {
-                    case .success:
-                        print("Token refreshed successfully")
-                    case .failure(let error):
-                        print("Failed to refresh token: \(error.localizedDescription)")
-                    }
+        // Check if the token is valid
+        if !ApiService.shared.isTokenValid() {
+            let tenantID = tenantID
+            let clientID = clientID
+            let clientSecret = clientSecret
+            
+            ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
+                switch result {
+                case .success:
+                    print("Token refreshed successfully")
+                case .failure(let error):
+                    print("Failed to refresh token: \(error.localizedDescription)")
                 }
-            } else {
-                print("Token is still valid, no need to refresh")
             }
+        } else {
+            print("Token is still valid, no need to refresh")
         }
-    
-    
-
-    
-   
+    }
 }
 
 //MARK: - Get Remote Config, Check App version and, Home screen setup method

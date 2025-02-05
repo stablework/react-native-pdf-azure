@@ -1,0 +1,22 @@
+PODS:
+  - SVProgressHUD (2.3.1):
+    - SVProgressHUD/Core (= 2.3.1)
+  - SVProgressHUD/Core (2.3.1)
+  - XMLCoder (0.14.0)
+
+DEPENDENCIES:
+  - SVProgressHUD
+  - XMLCoder
+
+SPEC REPOS:
+  trunk:
+    - SVProgressHUD
+    - XMLCoder
+
+SPEC CHECKSUMS:
+  SVProgressHUD: 4837c74bdfe2e51e8821c397825996a8d7de6e22
+  XMLCoder: 0199b725702f32aa3190a88ea2f6fb4847bfe1d1
+
+PODFILE CHECKSUM: e02d00b4d998ef7e0f463db15236edc04175503b
+
+COCOAPODS: 1.16.2

@@ -93,8 +93,9 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     private func fetchContainers() {
         let storageAccountName = storageAccountName
-        
+        showIndicator()
         ApiService.shared.listStorageContents(storageAccountName: storageAccountName) { result in
+            hideIndicator()
             switch result {
             case .success(let containers):
                 print("Fetched containers: \(containers)")

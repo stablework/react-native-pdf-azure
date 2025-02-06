@@ -148,9 +148,9 @@ class ApiService: NSObject, XMLParserDelegate  {
             
             let decoder = XMLDecoder()
             do {
-                let enumerationResults = try decoder.decode(EnumerationResults.self, from: data)
+                let enumerationResults = try decoder.decode(EnumerationContainerResults.self, from: data)
                 print(enumerationResults)
-                completion(.success(enumerationResults.containers.first?.containerName ?? []))
+                completion(.success(enumerationResults.containers.containerName ?? []))
             } catch {
                 completion(.failure(ApiError.parsingFailed))
                 print("Error decoding XML: \(error)")
@@ -170,6 +170,78 @@ class ApiService: NSObject, XMLParserDelegate  {
         task.resume()
     }
     
+    func listStorageBlobsContent(storageAccountName: String, containerName: String, completion: @escaping (Result<EnumerationBlobResults, Error>) -> Void) {
+        // Construct the URL
+        if !ApiService.shared.isTokenValid() {
+            let tenantID = tenantID
+            let clientID = clientID
+            let clientSecret = clientSecret
+            
+            ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
+                switch result {
+                case .success:
+                    self.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName, completion: completion)
+                    print("Token refreshed successfully")
+                case .failure(let error):
+                    completion(.failure(error))
+                    print("Failed to refresh token: \(error.localizedDescription)")
+                }
+            }
+            return
+        } else {
+            print("Token is still valid, no need to refresh")
+        }
+//        https://{{storageaccountname}}.blob.core.windows.net/{{containername}}?restype=container&comp=list
+        let urlString = "https://\(storageAccountName).blob.core.windows.net/\(containerName)?restype=container&comp=list"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(ApiError.invalidURL))
+            return
+        }
+        
+        // Retrieve Bearer Token
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            completion(.failure(ApiError.noData))
+            return
+        }
+        
+        // Create the URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("2017-11-09", forHTTPHeaderField: "x-ms-version")
+        request.setValue(currentUTCDateString(), forHTTPHeaderField: "x-ms-date")
+        
+        // Perform API call
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(ApiError.invalidResponse))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(ApiError.noData))
+                return
+            }
+            
+            let decoder = XMLDecoder()
+            do {
+                let enumerationResults = try decoder.decode(EnumerationBlobResults.self, from: data)
+                print(url)
+                print(enumerationResults)
+                completion(.success(enumerationResults))
+            } catch {
+                completion(.failure(ApiError.parsingFailed))
+                print("Error decoding XML: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
     // Helper to get current date in ISO 8601 format for x-ms-date
     private func currentISO8601DateString() -> String {
         let formatter = ISO8601DateFormatter()

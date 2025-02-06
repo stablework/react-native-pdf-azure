@@ -40,6 +40,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     let pdfView = PDFView()
     
     var pdfName:String = ""
+    var pdfURL:URL = URL(fileURLWithPath: "")
         
     var dict: [[String: Any]] = []
     
@@ -53,6 +54,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     let fixedFolders = ["Recent", "Favorite"]
     // Dynamic content
     var otherFolders: [Container] = []
+    var blobdetailModel : EnumerationBlobResults = EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
     var otherFolders1: [String] = ["Cooker"]
     var otherFolders2: [String] = ["PDFs"]
     var otherFolders3: [String] = []
@@ -114,6 +116,26 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // Load folders and PDFs from the specified path
   
+    private func fetchBlogs(containerName:String) {
+        let storageAccountName = storageAccountName
+        showIndicator()
+        ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
+            hideIndicator()
+            switch result {
+            case .success(let blobdetailModel):
+                print("Fetched containers: \(blobdetailModel)")
+                
+                // Update the otherFolder array and reload the table view
+                DispatchQueue.main.async {
+                    self.blobdetailModel = blobdetailModel
+                    self.tblView_documents.reloadData()
+                }
+                
+            case .failure(let error):
+                print("Error fetching containers: \(error.localizedDescription)")
+            }
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         let tabbar = self.tabBarController as! TabBarViewController
@@ -142,27 +164,30 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             NotificationCenter.default.post(name: Notification.Name("ToggleButtonVisibility"), object: nil, userInfo: ["isVisible": true])
         }
         if currentFolderPath != "" {
-            let slashCount = self.currentFolderPath.filter { $0 == "/" }.count
+            let slashCount = self.currentFolderPath.split(separator: "/").count
             if(slashCount > 0) {
-                if let lastSlashIndex = currentFolderPath.lastIndex(of: "/") {
-                    // Remove the last segment after the last "/"
-                    currentFolderPath.removeSubrange(lastSlashIndex..<currentFolderPath.endIndex)
-                }
+//                if let lastSlashIndex = currentFolderPath.lastIndex(of: "/") {
+//                    // Remove the last segment after the last "/"
+//                    currentFolderPath.removeSubrange(lastSlashIndex..<currentFolderPath.endIndex)
+//                }
+                var path = self.currentFolderPath.split(separator: "/")
+                path.removeLast()
+                currentFolderPath = path.joined(separator: "/")
             }else {
                 self.currentFolderPath = ""
                 self.showFixedFolders = true
                 backBtn.isHidden = true
             }
             self.tblView_documents.reloadData()
+        }else {
+            self.currentFolderPath = ""
+            self.showFixedFolders = true
+            backBtn.isHidden = true
+            self.tblView_documents.reloadData()
         }
     }
     
     func menu(indexPath:IndexPath,showRemovePass:Bool, curFile: PDFinfo) -> UIMenu {
-        
-        
-        
-        
-        
         let itemMenu = UIMenu(options: .displayInline,children: [
             //go to edit pdf screen
             UIAction(title: "Edit",image: UIImage(systemName: "pencil") ,handler: { _ in
@@ -295,6 +320,90 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
              
      
     }
+    
+    func menu(indexPath:IndexPath,showRemovePass:Bool, curFile: Blob) -> UIMenu {
+        let itemMenu = UIMenu(options: .displayInline,children: [
+            //go to edit pdf screen
+            UIAction(title: "Edit",image: UIImage(systemName: "pencil") ,handler: { _ in
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as! DocumentsDetailViewController
+                vc.editPDF = .edit
+//                vc.modelPDF = curFile
+                vc.hidesBottomBarWhenPushed = true
+                vc.myClosure = { arr in
+                    appDelegate.arrPDFinfo = arr
+                    self.tblView_documents.reloadData()
+                }
+                self.navigationController?.pushViewController(vc, animated: true)
+            }),
+            //rename file
+            
+            UIAction(title: "Rename",image: UIImage(systemName: "doc.text") ,handler: { _ in
+                let dict = curFile
+                let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
+                alertController.addTextField { (textfield) in
+                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                    let documentDirectory = URL(fileURLWithPath: path)
+                    let originPath = documentDirectory.appendingPathComponent(dict.name ?? "")
+                    textfield.text = originPath.deletingPathExtension().lastPathComponent
+                    textfield.placeholder = "Enter a new PDF name"
+                    textfield.becomeFirstResponder() // Show keyboard
+                    DispatchQueue.main.async{
+                        if let beginningOfText = textfield.beginningOfDocument as? UITextPosition{
+                            textfield.selectedTextRange = textfield.textRange(from: beginningOfText, to: beginningOfText)
+                        }
+                    }
+                }
+                let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
+                    if let newName = alertController.textFields?.first {
+                        let newPdfName = newName.text ?? "newFile"
+                        do {
+                            
+                            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                            let documentDirectory = URL(fileURLWithPath: path)
+                            let originPath = documentDirectory.appendingPathComponent(dict.name ?? "")
+                            var destinationPath = documentDirectory.appendingPathComponent(newPdfName)
+                            if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
+                                destinationPath = destinationPath.appendingPathExtension(originPath.pathExtension)
+                            }
+                            try FileManager.default.moveItem(at: originPath, to: destinationPath)
+                            
+//                            if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
+//                                appDelegate.arrPDFinfo[index].pdfName = destinationPath.lastPathComponent
+//                            }
+                            
+                            self.tblView_documents.reloadData()
+                        } catch {
+                            print(error)
+                        }
+                    }
+                }
+                let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
+                    
+                }
+                alertController.addAction(cancelAction)
+                alertController.addAction(doneAction)
+                self.present(alertController, animated: true)
+                
+            }),
+            
+//            curFile.isFavorite == "false" ?
+//            UIAction(title: "Add to Favorite",image: UIImage(systemName: "heart") ,handler: { _ in
+//                if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
+//                    appDelegate.arrPDFinfo[index].isFavorite = "true"
+//                    self.tblView_documents.reloadData()
+//                }
+//            }) :
+//                UIAction(title: "Remove from Favorite",image: UIImage(systemName: "heart.fill") ,handler: { _ in
+//                    if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
+//                        appDelegate.arrPDFinfo[index].isFavorite = "false"
+//                        self.tblView_documents.reloadData()
+//                    }
+//                })
+        ])
+        
+        return itemMenu
+    }
+    
     func addPasswordToPdf(docUrl:URL,password:String) {
         let pdfDocument = PDFDocument(url: docUrl)
         //         write with password protection
@@ -344,11 +453,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
 
 //MARK: - TableView delegates
     func numberOfSections(in tableView: UITableView) -> Int {
-//        if appDelegate.arrPDFinfo.count == 0 {
-//            view_noDocumentsAdded.isHidden = false
-//        }else {
-//            view_noDocumentsAdded.isHidden = true
-//        }
         if isRecent {
             return 1
         }
@@ -356,10 +460,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         if isFav {
             return 1
         }
-        let slashCount = self.currentFolderPath.filter { $0 == "/" }.count
-        if(slashCount > 1) {
-            return 1
-        }
+//        let slashCount = self.currentFolderPath.split(separator: "/").count
         return 2
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -375,13 +476,28 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         if showFixedFolders {
             return section == 0 ? fixedFolders.count : otherFolders.count
         } else {
-            let slashCount = self.currentFolderPath.filter { $0 == "/" }.count
-            if(slashCount > 1) {
-                return appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}.count
-            } else {
-                return section == 0 ? 1 : appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}.count
-
+            let slashCount = self.currentFolderPath.split(separator: "/").count
+            
+            let blogSlashCount = blobdetailModel.blobs.blob.filter({ blob in
+                let arrSplit = (blob.name?.split(separator: "/"))
+                return (arrSplit?.count ?? 0) == (slashCount+2)
+            }).count
+            
+            
+            let arrFolderNames = blobdetailModel.blobs.blob.filter({ blob in
+                let arrSplit = (blob.name?.split(separator: "/"))
+                return (arrSplit?.count ?? 0) == (slashCount+2)
+            }).map { Blob in
+                (Blob.name?.split(separator: "/"))?.first?.string ?? ""
             }
+            
+            let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys
+            
+            let documentCount = blobdetailModel.blobs.blob.filter({ blob in
+                let arrSplit = (blob.name?.split(separator: "/"))
+                return arrSplit?.count == (slashCount+1)
+            }).count
+            return section == 0 ? arrFolder.count : documentCount
         }
         
     }
@@ -398,17 +514,13 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                       let date2 = dateFormatter.date(from: pdf2.lastAccessedDate) else {
                     return false
                 }
-                return date1 > date2 // Ascending order: change to date1 > date2 for descending order
+                return date1 > date2
             }
             
             let dict = sortedPdfArray[indexPath.row]
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
-        
-    //        let img = self.generatePdfThumbnail(of: CGSize(width: cell.img_profile.width, height: cell.img_profile.height), for: docURL, atPage: pdfView.document?.pageCount ?? 0)
             
-    //        cell.img_profile.image = img
-    //        cell.img_profile.tintColor = UIColor(named: "app_themeColor")
             cell.lbl_title.text = dict.pdfName
             cell.img_profile.image = UIImage(systemName: "document")
             cell.btn_editPdf.isHidden = false
@@ -425,10 +537,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
         
-    //        let img = self.generatePdfThumbnail(of: CGSize(width: cell.img_profile.width, height: cell.img_profile.height), for: docURL, atPage: pdfView.document?.pageCount ?? 0)
-            
-    //        cell.img_profile.image = img
-    //        cell.img_profile.tintColor = UIColor(named: "app_themeColor")
             cell.lbl_title.text = dict.pdfName
             cell.img_profile.image = UIImage(systemName: "document")
             cell.btn_editPdf.isHidden = false
@@ -446,10 +554,10 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 if fixedFolders[indexPath.row] == "Recent" {
                     cell.lbl_fileNum.text = String(appDelegate.arrPDFinfo.count)
                     cell.img_profile?.image = UIImage(systemName: "clock") // Clock icon for Recent
-                            } else if fixedFolders[indexPath.row] == "Favorite" {
-                                cell.img_profile?.image = UIImage(systemName: "star") // Star icon for Favorite
-                                cell.lbl_fileNum.text = String(appDelegate.arrPDFinfo.filter {$0.isFavorite == "true"}.count)
-                            }
+                } else if fixedFolders[indexPath.row] == "Favorite" {
+                    cell.img_profile?.image = UIImage(systemName: "star") // Star icon for Favorite
+                    cell.lbl_fileNum.text = String(appDelegate.arrPDFinfo.filter {$0.isFavorite == "true"}.count)
+                }
                 
             } else {
                 cell.lbl_fileNum.isHidden = true
@@ -461,87 +569,84 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             cell.lbl_fileNum.isHidden = true
             if indexPath.section == 0 {
-                let slashCount = self.currentFolderPath.filter { $0 == "/" }.count
-                if (slashCount == 0) {
-                    cell.lbl_title.text = otherFolders1[indexPath.row]
-                    cell.img_profile.image = UIImage(systemName: "folder")
-                    cell.btn_editPdf.isHidden = true
-                }else if slashCount == 1 {
-                    cell.lbl_title.text = otherFolders2[indexPath.row]
-                    cell.img_profile.image = UIImage(systemName: "folder")
-                    cell.btn_editPdf.isHidden = true
-                } else {
-                    let dict = appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}[indexPath.row]
-                    let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                    let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
+                let slashCount = self.currentFolderPath.split(separator: "/").count
+//                let sortedDocumentArray = blobdetailModel.blobs.blob.filter({ blob in
+//                    let arrSplit = (blob.name?.split(separator: "/"))
+//                    return (arrSplit?.count ?? 0) == (slashCount+2)
+//                }).sorted { (pdf1, pdf2) -> Bool in
+//                    guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
+//                          let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {
+//                        return false
+//                    }
+//                    return date1 > date2 // Ascending order: change to date1 > date2 for descending order
+//                }
+//                
+                let arrFolderNames = blobdetailModel.blobs.blob.filter({ blob in
+                    let arrSplit = (blob.name?.split(separator: "/"))
+                    return (arrSplit?.count ?? 0) == (slashCount+2)
+                }).map { Blob in
+                    var blobname = (Blob.name?.split(separator: "/"))
+                    blobname?.removeLast()
+                    return blobname?.last?.string ?? ""
+                }
                 
-            //        let img = self.generatePdfThumbnail(of: CGSize(width: cell.img_profile.width, height: cell.img_profile.height), for: docURL, atPage: pdfView.document?.pageCount ?? 0)
-                    
-            //        cell.img_profile.image = img
-            //        cell.img_profile.tintColor = UIColor(named: "app_themeColor")
-                    cell.lbl_title.text = dict.pdfName
+                let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
+                
+//                let dict = sortedDocumentArray[indexPath.row]
+                cell.lbl_title.text = arrFolder[indexPath.row]///dict.name ?? ""
+                cell.img_profile.image = UIImage(systemName: "folder")
+                cell.btn_editPdf.isHidden = true
+            } else {
+                print(self.currentFolderPath)
+                print(appDelegate.arrPDFinfo)
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+                
+                let slashCount = self.currentFolderPath.split(separator: "/").count
+                
+                let sortedPdfArray = blobdetailModel.blobs.blob.filter({ blob in
+                    let arrSplit = (blob.name?.split(separator: "/"))
+                    return arrSplit?.count == (slashCount+1)
+                }).sorted { (pdf1, pdf2) -> Bool in
+                    guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
+                          let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {
+                        return false
+                    }
+                    return date1 > date2 // Ascending order: change to date1 > date2 for descending order
+                }
+                
+                let dict = sortedPdfArray[indexPath.row]
+                
+                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let docURL = documentDirectory.appendingPathComponent(dict.name ?? "")
+                if !(dict.properties?.contentType.hasPrefix("multipart/form-data") ?? false){
+                    cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
                     cell.img_profile.image = UIImage(systemName: "document")
                     cell.btn_editPdf.isHidden = false
                     
                     cell.selectionStyle = .gray
                     cell.btn_editPdf.showsMenuAsPrimaryAction = true
                     let pdfDocument = PDFDocument(url: docURL)
-                    cell.btn_editPdf.menu = self.menu(indexPath: indexPath,showRemovePass: pdfDocument?.isLocked ?? true, curFile: dict )
+                    cell.btn_editPdf.menu = self.menu(indexPath: indexPath,showRemovePass: pdfDocument?.isLocked ?? true, curFile: dict)
                     appDelegate.setPdfInfoUserDefault()
                     cell.btn_editPdf.isHidden = false
+                    cell.lbl_fileNum.isHidden = true
+                }else{
+                    cell.lbl_title.text = dict.name ?? ""
+                    cell.img_profile.image = UIImage(systemName: "folder")
+                    cell.btn_editPdf.isHidden = true
                 }
-                
-                
-            } else {
-                print(self.currentFolderPath)
-                print(appDelegate.arrPDFinfo)
-                let dict = appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}[indexPath.row]
-                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
-            
-        //        let img = self.generatePdfThumbnail(of: CGSize(width: cell.img_profile.width, height: cell.img_profile.height), for: docURL, atPage: pdfView.document?.pageCount ?? 0)
-                
-        //        cell.img_profile.image = img
-        //        cell.img_profile.tintColor = UIColor(named: "app_themeColor")
-                cell.lbl_title.text = dict.pdfName
-                cell.img_profile.image = UIImage(systemName: "document")
-                cell.btn_editPdf.isHidden = false
-                
-                cell.selectionStyle = .gray
-                cell.btn_editPdf.showsMenuAsPrimaryAction = true
-                let pdfDocument = PDFDocument(url: docURL)
-                cell.btn_editPdf.menu = self.menu(indexPath: indexPath,showRemovePass: pdfDocument?.isLocked ?? true, curFile: dict)
-                appDelegate.setPdfInfoUserDefault()
             }
-           
         }
-        
-        
-        
-        
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let vc = storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as! DocumentsDetailViewController
-//        vc.editPDF = .edit
-//        vc.modelPDF = appDelegate.arrPDFinfo[indexPath.section]
-//        vc.hidesBottomBarWhenPushed = true
-//        vc.myClosure = { arr in
-//            appDelegate.arrPDFinfo = arr
-//            self.tblView_documents.reloadData()
-//        }
-        
-        
         self.backBtn.isHidden = false
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
         if isRecent {
-           
-           
-
-            
-            
             let sortedPdfArray = appDelegate.arrPDFinfo.sorted { (pdf1, pdf2) -> Bool in
                 guard let date1 = dateFormatter.date(from: pdf1.lastAccessedDate),
                       let date2 = dateFormatter.date(from: pdf2.lastAccessedDate) else {
@@ -566,9 +671,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.title == modelPDF.title }) {
                 appDelegate.arrPDFinfo[index].lastAccessedDate = dateFormatter.string(from: Date())
             }
-    //        let vc = storyboard?.instantiateViewController(withIdentifier: "PdfViewVM") as! PdfViewVM
-    //        vc.pdfName = modelPDF.pdfName
-    //        self.navigationController?.pushViewController(vc, animated: true)
             self.pdfName = modelPDF.pdfName
             let previewController = QLPreviewController()
             previewController.dataSource = self
@@ -585,42 +687,36 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 self.tblView_documents.reloadData()
             } else {
+                blobdetailModel = EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
                 showFixedFolders = false
-                currentFolderPath += otherFolders[indexPath.row].name
+                currentFolderPath = ""//+= otherFolders[indexPath.row].name
+                fetchBlogs(containerName: otherFolders[indexPath.row].name)
                 self.tblView_documents.reloadData()
             }
         } else {
             if indexPath.section == 0 {
-                if currentFolderPath.filter({ $0 == "/" }).count == 0 {
-                    currentFolderPath += "/" + otherFolders1[indexPath.row]
-                } else if currentFolderPath.filter({ $0 == "/" }).count == 1 {
-                    currentFolderPath += "/" + otherFolders2[indexPath.row]
-                } else {
-                    let modelPDF = appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}[indexPath.row]
-                    if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.title == modelPDF.title }) {
-                        appDelegate.arrPDFinfo[index].lastAccessedDate = dateFormatter.string(from: Date())
-                    }
-            //        let vc = storyboard?.instantiateViewController(withIdentifier: "PdfViewVM") as! PdfViewVM
-            //        vc.pdfName = modelPDF.pdfName
-            //        self.navigationController?.pushViewController(vc, animated: true)
-                    self.pdfName = modelPDF.pdfName
-                    let previewController = QLPreviewController()
-                    previewController.dataSource = self
-                    previewController.delegate = self
-                    previewController.setEditing(false, animated: true)
-                    self.present(previewController, animated: true, completion: nil)
-                }
-                    
+                let slashCount = self.currentFolderPath.split(separator: "/").count
+                let documentCount = blobdetailModel.blobs.blob.filter({ blob in
+                    let arrSplit = (blob.name?.split(separator: "/"))
+                    return arrSplit?.count == (slashCount+2)
+                }).first
+                
+                var name = documentCount?.name?.split(separator: "/")
+                name?.removeLast()
+                currentFolderPath = name?.joined(separator: "/") ?? ""
                 self.tblView_documents.reloadData()
             } else {
-                let modelPDF = appDelegate.arrPDFinfo.filter {$0.folderPath == self.currentFolderPath}[indexPath.row]
-        //        let vc = storyboard?.instantiateViewController(withIdentifier: "PdfViewVM") as! PdfViewVM
-        //        vc.pdfName = modelPDF.pdfName
-        //        self.navigationController?.pushViewController(vc, animated: true)
-                if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.title == modelPDF.title }) {
-                    appDelegate.arrPDFinfo[index].lastAccessedDate = dateFormatter.string(from: Date())
+                let sortedPdfArray = blobdetailModel.blobs.blob.filter({ blob in
+                    (blob.name?.filter { $0 == "/" }.isEmpty ?? false)
+                }).sorted { (pdf1, pdf2) -> Bool in
+                    guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
+                          let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {
+                        return false
+                    }
+                    return date1 > date2 // Ascending order: change to date1 > date2 for descending order
                 }
-                self.pdfName = modelPDF.pdfName
+                
+                _ = sortedPdfArray[indexPath.row]
                 let previewController = QLPreviewController()
                 previewController.dataSource = self
                 previewController.delegate = self
@@ -738,7 +834,7 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(self.pdfName)
         
-        return docURL as QLPreviewItem
+        return pdfURL as QLPreviewItem
     }
     
     func previewController(_ controller: QLPreviewController, didUpdateContentsOf previewItem: QLPreviewItem) {

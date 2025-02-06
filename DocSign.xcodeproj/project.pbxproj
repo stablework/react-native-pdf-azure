@@ -180,15 +180,11 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8472B7BD2D48289C00D99B71 /* Services */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Services;
 			sourceTree = "<group>";
 		};
 		8472B7C32D4B371600D99B71 /* Models */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Models;
 			sourceTree = "<group>";
 		};
@@ -460,7 +456,6 @@
 				063FF6036343582E94AD1790 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */,
 				C3BE817DA22C98BF37BF9C08 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

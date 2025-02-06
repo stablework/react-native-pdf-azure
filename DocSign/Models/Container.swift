@@ -61,9 +61,9 @@ struct ContainerName: Codable {
 }
 
 // Define the root model EnumerationResults which contains the ServiceEndpoint and Containers
-struct EnumerationResults: Codable {
+struct EnumerationContainerResults: Codable {
     let serviceEndpoint: String
-    let containers: [ContainerName]
+    let containers: ContainerName
 
     // Coding Keys to match XML structure
     private enum CodingKeys: String, CodingKey {

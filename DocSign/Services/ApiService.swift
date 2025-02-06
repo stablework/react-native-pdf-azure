@@ -242,6 +242,91 @@ class ApiService: NSObject, XMLParserDelegate  {
         
         task.resume()
     }
+    
+    func PDFDownLoad(storageAccountName: String, containerName: String, blobName:String, completion: @escaping (Result<Data, Error>) -> Void) {
+        // Construct the URL
+        if !ApiService.shared.isTokenValid() {
+            let tenantID = tenantID
+            let clientID = clientID
+            let clientSecret = clientSecret
+            
+            ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
+                switch result {
+                case .success:
+                    self.PDFDownLoad(storageAccountName: storageAccountName, containerName: containerName, blobName:blobName, completion: completion)
+                    print("Token refreshed successfully")
+                case .failure(let error):
+                    completion(.failure(error))
+                    print("Failed to refresh token: \(error.localizedDescription)")
+                }
+            }
+            return
+        } else {
+            print("Token is still valid, no need to refresh")
+        }
+//        https://{{storageaccountname}}.blob.core.windows.net/{{containername}}/{{blobname}}.pdf
+        let urlString = "https://\(storageAccountName).blob.core.windows.net/\(containerName)/\(blobName)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(ApiError.invalidURL))
+            return
+        }
+        
+        // Retrieve Bearer Token
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            completion(.failure(ApiError.noData))
+            return
+        }
+        
+        // Create the URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("2017-11-09", forHTTPHeaderField: "x-ms-version")
+        request.setValue(currentUTCDateString(), forHTTPHeaderField: "x-ms-date")
+        request.setValue("BlockBlob", forHTTPHeaderField: "x-ms-blob-type")
+        request.setValue("*.mp4", forHTTPHeaderField: "Content-Type")
+        
+        // Create a custom URLSessionConfiguration
+        let configuration = URLSessionConfiguration.default
+
+        // Set timeout for a single request (e.g., 30 seconds)
+        configuration.timeoutIntervalForRequest = 30.0  // Timeout for individual requests
+
+        // Set timeout for the entire resource (e.g., 60 seconds)
+        configuration.timeoutIntervalForResource = 60.0  // Timeout for downloading the full resource
+
+        // Create a URLSession with the custom configuration
+        let session = URLSession(configuration: configuration)
+        
+        // Perform API call
+        let task = session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(ApiError.invalidResponse))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(ApiError.noData))
+                return
+            }
+            
+            print(request.url)
+            print(request.value(forHTTPHeaderField: "Authorization"))
+            print(request.value(forHTTPHeaderField: "x-ms-version"))
+            print(request.value(forHTTPHeaderField: "x-ms-date"))
+            print(request.value(forHTTPHeaderField: "x-ms-blob-type"))
+            print(request.value(forHTTPHeaderField: "Content-Type"))
+            completion(.success(data))
+        }
+        
+        task.resume()
+    }
+    
     // Helper to get current date in ISO 8601 format for x-ms-date
     private func currentISO8601DateString() -> String {
         let formatter = ISO8601DateFormatter()

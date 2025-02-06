@@ -14,6 +14,7 @@ import QuickLook
 class DocumentsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
 
 //MARK: - Outlets
+    @IBOutlet weak var lblNavigationTitle: UILabel!
     @IBOutlet weak var tblView_documents: UITableView!
     @IBOutlet weak var view_noDocumentsAdded: UIView!
 //    @IBOutlet weak var img_noDocuments: LottieAnimationView!
@@ -45,7 +46,12 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     var dict: [[String: Any]] = []
     
     var modelPDF : PDFinfo!
-    var currentFolderPath: String = ""
+    var currentFolderPath: String = ""{
+        didSet{
+            let lastPath = currentFolderPath.split(separator: "/").last?.string ?? ""
+            lblNavigationTitle.text = lastPath.isEmpty ? "Cook PDF App" : lastPath
+        }
+    }
     
 
     var selectedIndex:IndexPath?
@@ -131,6 +137,32 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.tblView_documents.reloadData()
                 }
                 
+            case .failure(let error):
+                print("Error fetching containers: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func downloadPDF(containerName:String,blobName:String, completionHandler:@escaping ()->Void) {
+        let storageAccountName = storageAccountName
+        showIndicator()
+        ApiService.shared.PDFDownLoad(storageAccountName: storageAccountName, containerName: containerName, blobName: blobName) { result in
+            hideIndicator()
+            switch result {
+            case .success(let pdfData):
+                // Create a temporary file for the PDF data
+                let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                let tempURL = documentDirectory.appendingPathComponent(containerName+blobName)
+                do {
+                    try pdfData.write(to: tempURL)
+                    
+                    DispatchQueue.main.async {
+                        completionHandler()
+                        // Set up and present the QLPreviewController
+                    }
+                } catch {
+                    print("Error saving PDF to temporary file: \(error)")
+                }
             case .failure(let error):
                 print("Error fetching containers: \(error.localizedDescription)")
             }
@@ -325,15 +357,64 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         let itemMenu = UIMenu(options: .displayInline,children: [
             //go to edit pdf screen
             UIAction(title: "Edit",image: UIImage(systemName: "pencil") ,handler: { _ in
-                let vc = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as! DocumentsDetailViewController
-                vc.editPDF = .edit
-//                vc.modelPDF = curFile
-                vc.hidesBottomBarWhenPushed = true
-                vc.myClosure = { arr in
-                    appDelegate.arrPDFinfo = arr
-                    self.tblView_documents.reloadData()
+                // Create PDFinfo model
+                //current date and time:
+                let currentDate = Date()
+                var dateFormatter = DateFormatter()
+                
+                //Current time:
+                dateFormatter.dateFormat = "d MMM,yyyy | HH:mm:ss"
+                let c_dateTime = dateFormatter.string(from: currentDate)
+                
+                //Replace space(" ") with "_":
+                dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+                let dateTime = dateFormatter.string(from: currentDate)
+                
+                self.pdfName = self.blobdetailModel.containerName+(curFile.name ?? "")
+                let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
+                let pdfDocument = PDFDocument(url: tempURL) ?? PDFDocument()
+                let finalFileName = (curFile.name?.split(separator: "/"))?.last?.string ?? ""
+                let finalFileTitle = ((curFile.name?.split(separator: "/"))?.last?.string ?? "").replacingOccurrences(of: ".pdf", with: "")
+                let fileSize = self.fileSize(fromPath: "\(tempURL.path)")
+                var pdfModel = PDFinfo(
+                    title: finalFileTitle,
+                    size: "\(fileSize ?? "")",
+                    dateTime: "\(c_dateTime)",
+                    pageCount: "\("") page",
+                    pdfName: finalFileName,
+                    isFavorite: "false",
+                    lastAccessedDate: "\(dateTime)",
+                    folderPath: ""
+                )
+                //set pageCount and pdfSize:
+                pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
+                pdfModel.size = fileSize ?? ""
+                
+                if FileManager.default.fileExists(atPath: tempURL.path){
+                    if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+                        secondVC.editPDF = .edit
+                        secondVC.pdfURL = tempURL
+                        secondVC.documents = pdfDocument
+                            secondVC.modelPDF = pdfModel
+                        secondVC.hidesBottomBarWhenPushed = true
+                        self.navigationController?.pushViewController(secondVC, animated: true)
+                    }
+                }else{
+                    self.downloadPDF(containerName: self.blobdetailModel.containerName, blobName: (curFile.name ?? "")){
+                        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                        let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
+                        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+                            secondVC.editPDF = .edit
+                            secondVC.pdfURL = tempURL
+                            secondVC.documents = pdfDocument
+                            secondVC.modelPDF = pdfModel
+                            secondVC.hidesBottomBarWhenPushed = true
+                            self.navigationController?.pushViewController(secondVC, animated: true)
+                        }
+                    }
                 }
-                self.navigationController?.pushViewController(vc, animated: true)
+    
             }),
             //rename file
             
@@ -386,19 +467,19 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             }),
             
-//            curFile.isFavorite == "false" ?
-//            UIAction(title: "Add to Favorite",image: UIImage(systemName: "heart") ,handler: { _ in
+            false/*curFile.isFavorite == "false"*/ ?
+            UIAction(title: "Add to Favorite",image: UIImage(systemName: "heart") ,handler: { _ in
 //                if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
 //                    appDelegate.arrPDFinfo[index].isFavorite = "true"
 //                    self.tblView_documents.reloadData()
 //                }
-//            }) :
-//                UIAction(title: "Remove from Favorite",image: UIImage(systemName: "heart.fill") ,handler: { _ in
+            }) :
+                UIAction(title: "Remove from Favorite",image: UIImage(systemName: "heart.fill") ,handler: { _ in
 //                    if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
 //                        appDelegate.arrPDFinfo[index].isFavorite = "false"
 //                        self.tblView_documents.reloadData()
 //                    }
-//                })
+                })
         ])
         
         return itemMenu
@@ -620,7 +701,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let docURL = documentDirectory.appendingPathComponent(dict.name ?? "")
-                if !(dict.properties?.contentType.hasPrefix("multipart/form-data") ?? false){
+//                if !(dict.properties?.contentType.hasPrefix("multipart/form-data") ?? false){
                     cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
                     cell.img_profile.image = UIImage(systemName: "document")
                     cell.btn_editPdf.isHidden = false
@@ -632,11 +713,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     appDelegate.setPdfInfoUserDefault()
                     cell.btn_editPdf.isHidden = false
                     cell.lbl_fileNum.isHidden = true
-                }else{
-                    cell.lbl_title.text = dict.name ?? ""
-                    cell.img_profile.image = UIImage(systemName: "folder")
-                    cell.btn_editPdf.isHidden = true
-                }
+//                }else{
+//                    cell.lbl_title.text = dict.name ?? ""
+//                    cell.img_profile.image = UIImage(systemName: "folder")
+//                    cell.btn_editPdf.isHidden = true
+//                }
             }
         }
         return cell
@@ -706,8 +787,10 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 currentFolderPath = name?.joined(separator: "/") ?? ""
                 self.tblView_documents.reloadData()
             } else {
+                let slashCount = self.currentFolderPath.split(separator: "/").count
                 let sortedPdfArray = blobdetailModel.blobs.blob.filter({ blob in
-                    (blob.name?.filter { $0 == "/" }.isEmpty ?? false)
+                    let arrSplit = (blob.name?.split(separator: "/"))
+                    return arrSplit?.count == (slashCount+1)
                 }).sorted { (pdf1, pdf2) -> Bool in
                     guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
                           let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {
@@ -716,12 +799,25 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     return date1 > date2 // Ascending order: change to date1 > date2 for descending order
                 }
                 
-                _ = sortedPdfArray[indexPath.row]
-                let previewController = QLPreviewController()
-                previewController.dataSource = self
-                previewController.delegate = self
-                previewController.setEditing(false, animated: true)
-                self.present(previewController, animated: true, completion: nil)
+                pdfName = blobdetailModel.containerName+(sortedPdfArray[indexPath.row].name ?? "")
+                let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                let tempURL = documentDirectory.appendingPathComponent(pdfName)
+                if FileManager.default.fileExists(atPath: tempURL.path){
+                    let previewController = QLPreviewController()
+                    previewController.dataSource = self
+                    previewController.delegate = self
+                    previewController.setEditing(false, animated: true)
+                    self.present(previewController, animated: true, completion: nil)
+                }else{
+                    downloadPDF(containerName: blobdetailModel.containerName, blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+                        let previewController = QLPreviewController()
+                        previewController.dataSource = self
+                        previewController.delegate = self
+                        previewController.setEditing(false, animated: true)
+                        self.present(previewController, animated: true, completion: nil)
+                    }
+                }
+
             }
         }
                 
@@ -818,7 +914,30 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
 
 //MARK: - Functions
 extension DocumentsViewController{
- 
+    func fileSize(fromPath path: String) -> String? {
+        guard let size = try? FileManager.default.attributesOfItem(atPath: path)[FileAttributeKey.size],
+              let fileSize = size as? UInt64 else {
+                  return nil
+              }
+        
+        // bytes
+        if fileSize < 1023 {
+            return String(format: "%lu bytes", CUnsignedLong(fileSize))
+        }
+        // KB
+        var floatSize = Float(fileSize / 1024)
+        if floatSize < 1023 {
+            return String(format: "%.1f KB", floatSize)
+        }
+        // MB
+        floatSize = floatSize / 1024
+        if floatSize < 1023 {
+            return String(format: "%.1f MB", floatSize)
+        }
+        // GB
+        floatSize = floatSize / 1024
+        return String(format: "%.1f GB", floatSize)
+    }
 }
 
 
@@ -831,10 +950,12 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         print(controller.isEditing)
         
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let docURL = documentDirectory.appendingPathComponent(self.pdfName)
-        
-        return pdfURL as QLPreviewItem
+//        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        let docURL = documentDirectory.appendingPathComponent(self.pdfName)
+        // Provide the temporary file URL as the preview item
+        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let tempURL = documentDirectory.appendingPathComponent(pdfName)
+        return tempURL as QLPreviewItem
     }
     
     func previewController(_ controller: QLPreviewController, didUpdateContentsOf previewItem: QLPreviewItem) {
@@ -843,4 +964,7 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
         return .disabled }
     
+    func previewControllerDidDismiss(_ controller: QLPreviewController) {
+        // Remove the temporary file after you're done
+    }
 }

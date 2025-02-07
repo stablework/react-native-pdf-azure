@@ -19,6 +19,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //MARK: - Properties
     var window: UIWindow?
     var arrPDFinfo = [PDFinfo]()
+    var container: [Container] = []
+    
+//    {
+//        get{
+//            return UserDefaults.standard.array(forKey: "container") as? [Container] ?? []
+//        }
+//        set{
+//            UserDefaults.standard.set(newValue, forKey: "container")
+//        }
+//    }
+    var blobdetailModel : [String:EnumerationBlobResults] = [:]
+//    {
+//        get{
+//            return UserDefaults.standard.dictionary(forKey: "container") as? [String:EnumerationBlobResults] ?? [:]
+//        }
+//        set{
+//            UserDefaults.standard.set(newValue, forKey: "container")
+//        }
+//    }
+//    EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
     
     //For banner ads:
     var modelConfig = ClsRemoteConfig(fromDictionary: [:])
@@ -62,6 +82,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //sleep(2)
+        fetchContainers()
+        
         return true
     }
     
@@ -247,5 +269,60 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
              UIApplication.shared.open(url)
          }
         completionHandler()
+    }
+}
+
+// API Call
+extension AppDelegate{
+    private func fetchContainers() {
+        let storageAccountName = storageAccountName
+        showIndicator()
+        ApiService.shared.listStorageContents(storageAccountName: storageAccountName) { result in
+            hideIndicator()
+            switch result {
+            case .success(let containers):
+                print("Fetched containers: \(containers)")
+                
+                // Update the otherFolder array and reload the table view
+                DispatchQueue.main.async {
+                    self.container = containers
+                    DispatchQueue.global(qos: .background).async {
+                        for container in self.container {
+                            self.fetchBlogs(containerName:container.name, isNotify: false)
+                        }
+                    }
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("setContainer"), object: nil)
+                }
+                
+            case .failure(let error):
+                print("Error fetching containers: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // Load folders and PDFs from the specified path
+  
+    func fetchBlogs(containerName:String, isNotify:Bool = true) {
+        let storageAccountName = storageAccountName
+        showIndicator()
+        ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
+            hideIndicator()
+            switch result {
+            case .success(let blobdetailModel):
+                print("Fetched containers: \(blobdetailModel)")
+                
+                // Update the otherFolder array and reload the table view
+                DispatchQueue.main.async {
+                    self.blobdetailModel[containerName] = blobdetailModel
+                    if isNotify{
+                        NotificationCenter.default.post(name: NSNotification.Name("setContainer"), object: nil)
+                    }
+                }
+                
+            case .failure(let error):
+                print("Error fetching containers: \(error.localizedDescription)")
+            }
+        }
     }
 }

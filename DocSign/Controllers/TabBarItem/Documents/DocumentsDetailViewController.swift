@@ -20,6 +20,9 @@ struct PDFinfo: Codable, Equatable {
     var isFavorite: String
     var lastAccessedDate: String
     var folderPath: String
+    var storageAccountName: String
+    var containerName: String
+    var blobName: String
 }
 
 enum type {
@@ -35,9 +38,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     //UIView:
     @IBOutlet weak var view_bottomButtons: UIView!
-    
     @IBOutlet weak var main_view: UIView!
-    
     //UIButton:
     @IBOutlet weak var btn_mainAdd: UIButton!
     @IBOutlet weak var btn_add: UIButton!
@@ -46,8 +47,6 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     @IBOutlet weak var btn_mainShare: UIButton!
     @IBOutlet weak var btn_share: UIButton!
     @IBOutlet weak var btn_txtShare: UIButton!
-    
-
     
     @IBOutlet weak var btn_mainText: UIButton!
     @IBOutlet weak var btn_text: UIButton!
@@ -73,10 +72,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     //UIPageController:
     @IBOutlet weak var pageController: UIPageControl!
     
-   
-    
     //MARK: - Properties
-    
     //pdfView:
     var pdfView = PDFView()
     var documents = PDFDocument()
@@ -187,8 +183,30 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     }
     
     @IBAction func btn_back(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
-        self.tabBarController?.tabBar.isHidden = false
+        displayAlertWithTitle("Cook PDF App", andMessage: "Are you want to upload this PDF file", buttons: ["Finish and Upload", "Save as Draft", "Cancel"]) { index in
+            if index == 0{
+                showIndicator()
+                ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: self.modelPDF.blobName) { result in
+                    switch result {
+                    case .success(_):
+                        print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
+                        hideIndicator()
+                        self.navigationController?.popViewController(animated: true)
+                        self.tabBarController?.tabBar.isHidden = false
+                    case .failure(let failure):
+                        print("Upload Failer :--->> ", failure.localizedDescription)
+                    }
+                }
+            }else{
+                if index == 2{
+                    let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                    let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
+                    try? self.documents.dataRepresentation()?.write(to: docURL)
+                }
+                self.navigationController?.popViewController(animated: true)
+                self.tabBarController?.tabBar.isHidden = false
+            }
+        }
     }
     
     //MARK: - Actions
@@ -198,7 +216,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     @IBAction func btn_mainShare(_ sender: Any) {
         
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         let objectsToShare = [docURL]
@@ -237,7 +255,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     @IBAction func btn_printer(_ sender: Any) {
         
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         let info = UIPrintInfo(dictionary:nil)
@@ -311,7 +329,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         let data = pdfView.document?.dataRepresentation()
         
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         
         let docURL = documentDirectory.appendingPathComponent("\(modelPDF.pdfName)")
         
@@ -356,7 +374,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         let fileManager = FileManager()
         
         if editPDF == .add {
-            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
             print(modelPDF.pdfName)
             if fileManager.fileExists(atPath: docURL.path){
@@ -369,7 +387,8 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
             }
         }
         else{
-            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
             if fileManager.fileExists(atPath: docURL.path){
                 pdfView.document = PDFDocument(url: docURL)
@@ -524,7 +543,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         print(controller.isEditing)
         
-        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         return docURL as QLPreviewItem

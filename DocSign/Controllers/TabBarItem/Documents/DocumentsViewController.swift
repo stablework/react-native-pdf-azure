@@ -147,7 +147,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         let storageAccountName = storageAccountName
         showIndicator()
         ApiService.shared.PDFDownLoad(storageAccountName: storageAccountName, containerName: containerName, blobName: blobName) { result in
-            hideIndicator()
             switch result {
             case .success(let pdfData):
                 // Create a temporary file for the PDF data
@@ -157,13 +156,16 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     try pdfData.write(to: tempURL)
                     
                     DispatchQueue.main.async {
+                        hideIndicator()
                         completionHandler()
                         // Set up and present the QLPreviewController
                     }
                 } catch {
+                    hideIndicator()
                     print("Error saving PDF to temporary file: \(error)")
                 }
             case .failure(let error):
+                hideIndicator()
                 print("Error fetching containers: \(error.localizedDescription)")
             }
         }
@@ -239,9 +241,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let dict = curFile
                 let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
                 alertController.addTextField { (textfield) in
-                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-                    let documentDirectory = URL(fileURLWithPath: path)
-                    let originPath = documentDirectory.appendingPathComponent(dict.pdfName)
+                    let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                    let originPath = cachesDirectory.appendingPathComponent(dict.pdfName)
                     textfield.text = originPath.deletingPathExtension().lastPathComponent
                     textfield.placeholder = "Enter a new PDF name"
                     textfield.becomeFirstResponder() // Show keyboard
@@ -256,7 +257,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                        let newPdfName = newName.text ?? "newFile"
                        do {
                            
-                           let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                           let path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
                            let documentDirectory = URL(fileURLWithPath: path)
                            let originPath = documentDirectory.appendingPathComponent(dict.pdfName)
                            var destinationPath = documentDirectory.appendingPathComponent(newPdfName)
@@ -283,51 +284,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.present(alertController, animated: true)
                 
             }),
-           
-//            UIAction(title:!showRemovePass ? "Add Password" : "Remove Pass",image: UIImage(systemName: "lock.doc") ,handler: { _ in
-//
-//                let dict = appDelegate.arrPDFinfo[indexPath.section]
-//                        let alertController = UIAlertController(title: !showRemovePass ? "Add Password" : "Remove Pass", message: "", preferredStyle: .alert)
-//                        alertController.addTextField { (textfield) in
-//                            textfield.placeholder = "Enter a Password"
-//                        }
-//                        let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
-//                            if let newName = alertController.textFields?.first {
-//                                let password = newName.text ?? ""
-//                                let dict = appDelegate.arrPDFinfo[indexPath.section]
-//                                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//                                let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
-//                                let fileManager = FileManager()
-//                                if fileManager.fileExists(atPath: docURL.path){
-//                                    let pdfDoc = PDFDocument(url: docURL)
-//                                    if showRemovePass {
-//                                        self.removePasswordFromPdf(docUrl: docURL, password: password)
-//                                    }
-//                                    else {
-//                                        self.addPasswordToPdf(docUrl: docURL, password: password)
-//                                    }
-//                                    self.tblView_documents.reloadData()
-//                                }
-//                            }
-//                        }
-//                        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
-//                            
-//                        }
-//                        alertController.addAction(doneAction)
-//                        alertController.addAction(cancelAction)
-//                        self.present(alertController, animated: true)
-//                        
-//                    
-//                    
-//                }),
 
-            //delete pdf
-//            UIAction(title: "Share",image: UIImage(systemName: "square.and.arrow.up") ,handler: { _ in
-//                let dict = appDelegate.arrPDFinfo[indexPath.section]
-//                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//                let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
-//                self.sharePdf(docUrl: docURL)
-//            }),
             curFile.isFavorite == "false" ?
             UIAction(title: "Add to Favorite",image: UIImage(systemName: "heart") ,handler: { _ in
                 if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
@@ -341,11 +298,6 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         self.tblView_documents.reloadData()
                     }
                 })
-                ,
-//            UIAction(title: "Delete",image: UIImage(systemName: "trash.fill"),attributes: .destructive ,handler: { _ in
-////                let dict = appDelegate.arrPDFinfo.filter { $0.folderPath == self.currentFolderPath }[indexPath.row]
-//                self.simpleAlert(vc: self, title: "PDF Editor", message: "Are you sure you want to delete \(curFile.pdfName)?", indexPath: indexPath)
-//            })
         ])
             
         return itemMenu
@@ -374,7 +326,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
                 let pdfDocument = PDFDocument(url: tempURL) ?? PDFDocument()
-                let finalFileName = (curFile.name?.split(separator: "/"))?.last?.string ?? ""
+                let finalFileName = self.pdfName//(curFile.name?.split(separator: "/"))?.last?.string ?? ""
                 let finalFileTitle = ((curFile.name?.split(separator: "/"))?.last?.string ?? "").replacingOccurrences(of: ".pdf", with: "")
                 let fileSize = self.fileSize(fromPath: "\(tempURL.path)")
                 var pdfModel = PDFinfo(
@@ -385,7 +337,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     pdfName: finalFileName,
                     isFavorite: "false",
                     lastAccessedDate: "\(dateTime)",
-                    folderPath: ""
+                    folderPath: "", storageAccountName: storageAccountName, containerName: self.blobdetailModel.containerName, blobName: curFile.name ?? ""
                 )
                 //set pageCount and pdfSize:
                 pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
@@ -422,9 +374,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let dict = curFile
                 let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
                 alertController.addTextField { (textfield) in
-                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-                    let documentDirectory = URL(fileURLWithPath: path)
-                    let originPath = documentDirectory.appendingPathComponent(dict.name ?? "")
+                    let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                    let originPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName + (dict.name ?? ""))
                     textfield.text = originPath.deletingPathExtension().lastPathComponent
                     textfield.placeholder = "Enter a new PDF name"
                     textfield.becomeFirstResponder() // Show keyboard
@@ -437,23 +388,38 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
                     if let newName = alertController.textFields?.first {
                         let newPdfName = newName.text ?? "newFile"
+                        showIndicator()
                         do {
-                            
-                            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-                            let documentDirectory = URL(fileURLWithPath: path)
-                            let originPath = documentDirectory.appendingPathComponent(dict.name ?? "")
-                            var destinationPath = documentDirectory.appendingPathComponent(newPdfName)
+                            let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                            let originPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName + (dict.name ?? ""))
+                            let fileName = originPath.deletingPathExtension().lastPathComponent
+                            let finalName = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName)
+                            var destinationPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName+finalName)
                             if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
-                                destinationPath = destinationPath.appendingPathExtension(originPath.pathExtension)
+                                destinationPath = cachesDirectory.appendingPathExtension(originPath.pathExtension)
                             }
-                            try FileManager.default.moveItem(at: originPath, to: destinationPath)
+                            if FileManager.default.fileExists(atPath: originPath.path){
+                                print("from url :- ", originPath.path)
+                                print("to url :- ", destinationPath.path)
+                                
+                                try FileManager.default.moveItem(at: originPath, to: destinationPath)
+                            }
                             
-//                            if let index = appDelegate.arrPDFinfo.firstIndex(where: { $0.lastAccessedDate == curFile.lastAccessedDate }) {
-//                                appDelegate.arrPDFinfo[index].pdfName = destinationPath.lastPathComponent
-//                            }
-                            
-                            self.tblView_documents.reloadData()
+                            ApiService.shared.deletePDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName,blobName: (dict.name ?? "")) { _ in
+                                ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: newPdfName) { result in
+                                    switch result {
+                                    case .success(_):
+                                        print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
+                                        self.fetchBlogs(containerName:self.otherFolders[indexPath.row].name)
+                                    case .failure(let failure):
+                                        hideIndicator()
+                                        print("Upload Failer :--->> ", failure.localizedDescription)
+                                    }
+                                }
+                            }
+//                            self.tblView_documents.reloadData()
                         } catch {
+                            hideIndicator()
                             print(error)
                         }
                     }
@@ -599,7 +565,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             let dict = sortedPdfArray[indexPath.row]
-            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
             
             cell.lbl_title.text = dict.pdfName
@@ -615,7 +581,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.lbl_fileNum.isHidden = true
         } else if isFav {
             let dict = appDelegate.arrPDFinfo.filter {$0.isFavorite == "true"}[indexPath.row]
-            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.pdfName)
         
             cell.lbl_title.text = dict.pdfName
@@ -699,7 +665,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 let dict = sortedPdfArray[indexPath.row]
                 
-                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
                 let docURL = documentDirectory.appendingPathComponent(dict.name ?? "")
 //                if !(dict.properties?.contentType.hasPrefix("multipart/form-data") ?? false){
                     cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
@@ -949,10 +915,6 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
     
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         print(controller.isEditing)
-        
-//        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//        let docURL = documentDirectory.appendingPathComponent(self.pdfName)
-        // Provide the temporary file URL as the preview item
         let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let tempURL = documentDirectory.appendingPathComponent(pdfName)
         return tempURL as QLPreviewItem

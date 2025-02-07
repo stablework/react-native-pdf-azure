@@ -237,7 +237,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate, UIIm
                         pdfName: "\(formattedFileName).pdf",
                         isFavorite: "false",
                         lastAccessedDate: "\(dateTime)",
-                        folderPath: ""
+                        folderPath: "", storageAccountName: "", containerName: "", blobName: ""
                     )
                     //set pageCount and pdfSize:
                     pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
@@ -379,7 +379,7 @@ extension TabBarViewController:PHPickerViewControllerDelegate {
                     pdfName: "\(formattedFileName).pdf",
                     isFavorite: "false",
                     lastAccessedDate: "\(dateTime)",
-                    folderPath: ""
+                    folderPath: "", storageAccountName: "", containerName: "", blobName: ""
                 )
                 //set pageCount and pdfSize:
                 pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
@@ -444,7 +444,7 @@ extension TabBarViewController:VNDocumentCameraViewControllerDelegate {
                 pdfName: "\(formattedFileName).pdf",
                 isFavorite: "false",
                 lastAccessedDate: "\(dateTime)",
-                folderPath: ""
+                folderPath: "", storageAccountName: "", containerName: "", blobName: ""
             )
             //set pageCount and pdfSize:
             pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
@@ -498,7 +498,7 @@ extension TabBarViewController: UIDocumentPickerDelegate {
                     pdfName: "\(formattedFileName).pdf",
                     isFavorite: "false",
                     lastAccessedDate: "\(dateTime)",
-                    folderPath: ""
+                    folderPath: "", storageAccountName: "", containerName: "", blobName: ""
                 )
                 //set pageCount and pdfSize:
                 pdfModel.pageCount = "\((pdfDocument.pageCount)) page"

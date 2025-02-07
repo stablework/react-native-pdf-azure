@@ -39,6 +39,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     var dateFormatter = DateFormatter()
     let currentDate = Date()
     let pdfView = PDFView()
+    var containerName = ""
     
     var pdfName:String = ""
     var pdfURL:URL = URL(fileURLWithPath: "")
@@ -52,19 +53,12 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             lblNavigationTitle.text = lastPath.isEmpty ? "Cook PDF App" : lastPath
         }
     }
-    
 
     var selectedIndex:IndexPath?
     
     // Fixed folders
     let fixedFolders = ["Recent", "Favorite"]
-    // Dynamic content
-    var otherFolders: [Container] = []
-    var blobdetailModel : EnumerationBlobResults = EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
-    var otherFolders1: [String] = ["Cooker"]
-    var otherFolders2: [String] = ["PDFs"]
-    var otherFolders3: [String] = []
-    var pdfFiles: [String] = []
+    
     var showFixedFolders = true // Flag to show/hide "Recent" and "Favorite"
     
     var isRecent = false
@@ -96,50 +90,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         
         backBtn.isHidden = true
         
-        fetchContainers()
-    }
-    
-    private func fetchContainers() {
-        let storageAccountName = storageAccountName
-        showIndicator()
-        ApiService.shared.listStorageContents(storageAccountName: storageAccountName) { result in
-            hideIndicator()
-            switch result {
-            case .success(let containers):
-                print("Fetched containers: \(containers)")
-                
-                // Update the otherFolder array and reload the table view
-                DispatchQueue.main.async {
-                    self.otherFolders = containers
-                    self.tblView_documents.reloadData()
-                }
-                
-            case .failure(let error):
-                print("Error fetching containers: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    // Load folders and PDFs from the specified path
-  
-    private func fetchBlogs(containerName:String) {
-        let storageAccountName = storageAccountName
-        showIndicator()
-        ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
-            hideIndicator()
-            switch result {
-            case .success(let blobdetailModel):
-                print("Fetched containers: \(blobdetailModel)")
-                
-                // Update the otherFolder array and reload the table view
-                DispatchQueue.main.async {
-                    self.blobdetailModel = blobdetailModel
-                    self.tblView_documents.reloadData()
-                }
-                
-            case .failure(let error):
-                print("Error fetching containers: \(error.localizedDescription)")
-            }
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("setContainer"), object: nil, queue: .main) { _ in
+            self.tblView_documents.reloadData()
         }
     }
     
@@ -322,7 +274,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
                 let dateTime = dateFormatter.string(from: currentDate)
                 
-                self.pdfName = self.blobdetailModel.containerName+(curFile.name ?? "")
+                self.pdfName = self.containerName+(curFile.name ?? "")
                 let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
                 let pdfDocument = PDFDocument(url: tempURL) ?? PDFDocument()
@@ -337,7 +289,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     pdfName: finalFileName,
                     isFavorite: "false",
                     lastAccessedDate: "\(dateTime)",
-                    folderPath: "", storageAccountName: storageAccountName, containerName: self.blobdetailModel.containerName, blobName: curFile.name ?? ""
+                    folderPath: "", storageAccountName: storageAccountName, containerName: self.containerName, blobName: curFile.name ?? ""
                 )
                 //set pageCount and pdfSize:
                 pdfModel.pageCount = "\((pdfDocument.pageCount)) page"
@@ -353,7 +305,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         self.navigationController?.pushViewController(secondVC, animated: true)
                     }
                 }else{
-                    self.downloadPDF(containerName: self.blobdetailModel.containerName, blobName: (curFile.name ?? "")){
+                    self.downloadPDF(containerName: self.containerName, blobName: (curFile.name ?? "")){
                         let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
                         let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
                         if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
@@ -375,7 +327,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
                 alertController.addTextField { (textfield) in
                     let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-                    let originPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName + (dict.name ?? ""))
+                    let originPath = cachesDirectory.appendingPathComponent((dict.name ?? ""))
                     textfield.text = originPath.deletingPathExtension().lastPathComponent
                     textfield.placeholder = "Enter a new PDF name"
                     textfield.becomeFirstResponder() // Show keyboard
@@ -391,10 +343,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         showIndicator()
                         do {
                             let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-                            let originPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName + (dict.name ?? ""))
+                            let originPath = cachesDirectory.appendingPathComponent(self.containerName + (dict.name ?? ""))
+                            
                             let fileName = originPath.deletingPathExtension().lastPathComponent
-                            let finalName = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName)
-                            var destinationPath = cachesDirectory.appendingPathComponent(self.blobdetailModel.containerName+finalName)
+                            let finalName = (dict.name ?? "").replacingOccurrences(of: fileName.replacingOccurrences(of: self.containerName, with: ""), with: newPdfName)
+                            var destinationPath = cachesDirectory.appendingPathComponent(self.containerName+finalName)
                             if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
                                 destinationPath = cachesDirectory.appendingPathExtension(originPath.pathExtension)
                             }
@@ -405,12 +358,12 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                                 try FileManager.default.moveItem(at: originPath, to: destinationPath)
                             }
                             
-                            ApiService.shared.deletePDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName,blobName: (dict.name ?? "")) { _ in
-                                ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: newPdfName) { result in
+                            ApiService.shared.deletePDF(storageAccountName: storageAccountName, containerName: self.containerName, blobName: (dict.name ?? "")) { _ in
+                                ApiService.shared.uploadPDF(storageAccountName: storageAccountName, containerName: self.containerName, blobName: newPdfName) { result in
                                     switch result {
                                     case .success(_):
-                                        print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
-                                        self.fetchBlogs(containerName:self.otherFolders[indexPath.row].name)
+                                        print("Upload Success :--->>> \(self.containerName) / \(newPdfName)")
+                                        appDelegate.fetchBlogs(containerName:self.containerName)
                                     case .failure(let failure):
                                         hideIndicator()
                                         print("Upload Failer :--->> ", failure.localizedDescription)
@@ -521,29 +474,30 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         if showFixedFolders {
-            return section == 0 ? fixedFolders.count : otherFolders.count
+            return section == 0 ? fixedFolders.count : appDelegate.container.count
         } else {
             let slashCount = self.currentFolderPath.split(separator: "/").count
             
-            let blogSlashCount = blobdetailModel.blobs.blob.filter({ blob in
+            let blogSlashCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
                 return (arrSplit?.count ?? 0) == (slashCount+2)
             }).count
             
             
-            let arrFolderNames = blobdetailModel.blobs.blob.filter({ blob in
+            let arrFolderNames = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
                 return (arrSplit?.count ?? 0) == (slashCount+2)
             }).map { Blob in
                 (Blob.name?.split(separator: "/"))?.first?.string ?? ""
-            }
+            } ?? []
             
             let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys
             
-            let documentCount = blobdetailModel.blobs.blob.filter({ blob in
+            let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
                 return arrSplit?.count == (slashCount+1)
-            }).count
+            }).count ?? 0
+            
             return section == 0 ? arrFolder.count : documentCount
         }
         
@@ -608,7 +562,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else {
                 cell.lbl_fileNum.isHidden = true
-                cell.lbl_title.text = otherFolders[indexPath.row].name
+                cell.lbl_title.text = appDelegate.container[indexPath.row].name
                 cell.img_profile.image = UIImage(systemName: "folder")
             }
             cell.btn_editPdf.isHidden = true
@@ -628,14 +582,14 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
 //                    return date1 > date2 // Ascending order: change to date1 > date2 for descending order
 //                }
 //                
-                let arrFolderNames = blobdetailModel.blobs.blob.filter({ blob in
+                let arrFolderNames = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
                     return (arrSplit?.count ?? 0) == (slashCount+2)
                 }).map { Blob in
                     var blobname = (Blob.name?.split(separator: "/"))
                     blobname?.removeLast()
                     return blobname?.last?.string ?? ""
-                }
+                } ?? [String]()
                 
                 let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
                 
@@ -652,7 +606,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 let slashCount = self.currentFolderPath.split(separator: "/").count
                 
-                let sortedPdfArray = blobdetailModel.blobs.blob.filter({ blob in
+                let sortedPdfArray = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
                     return arrSplit?.count == (slashCount+1)
                 }).sorted { (pdf1, pdf2) -> Bool in
@@ -661,7 +615,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         return false
                     }
                     return date1 > date2 // Ascending order: change to date1 > date2 for descending order
-                }
+                } ?? []
                 
                 let dict = sortedPdfArray[indexPath.row]
                 
@@ -734,16 +688,15 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 self.tblView_documents.reloadData()
             } else {
-                blobdetailModel = EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
+                containerName = appDelegate.container[indexPath.row].name
                 showFixedFolders = false
-                currentFolderPath = ""//+= otherFolders[indexPath.row].name
-                fetchBlogs(containerName: otherFolders[indexPath.row].name)
+                currentFolderPath = ""
                 self.tblView_documents.reloadData()
             }
         } else {
             if indexPath.section == 0 {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
-                let documentCount = blobdetailModel.blobs.blob.filter({ blob in
+                let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
                     return arrSplit?.count == (slashCount+2)
                 }).first
@@ -754,7 +707,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.tblView_documents.reloadData()
             } else {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
-                let sortedPdfArray = blobdetailModel.blobs.blob.filter({ blob in
+                let sortedPdfArray = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
                     return arrSplit?.count == (slashCount+1)
                 }).sorted { (pdf1, pdf2) -> Bool in
@@ -763,9 +716,9 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         return false
                     }
                     return date1 > date2 // Ascending order: change to date1 > date2 for descending order
-                }
+                } ?? []
                 
-                pdfName = blobdetailModel.containerName+(sortedPdfArray[indexPath.row].name ?? "")
+                pdfName = containerName+(sortedPdfArray[indexPath.row].name ?? "")
                 let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(pdfName)
                 if FileManager.default.fileExists(atPath: tempURL.path){
@@ -775,7 +728,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     previewController.setEditing(false, animated: true)
                     self.present(previewController, animated: true, completion: nil)
                 }else{
-                    downloadPDF(containerName: blobdetailModel.containerName, blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+                    downloadPDF(containerName: containerName, blobName: (sortedPdfArray[indexPath.row].name ?? "")){
                         let previewController = QLPreviewController()
                         previewController.dataSource = self
                         previewController.delegate = self

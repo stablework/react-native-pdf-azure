@@ -190,16 +190,18 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
                     switch result {
                     case .success(_):
                         print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
-                        hideIndicator()
-                        self.navigationController?.popViewController(animated: true)
-                        self.tabBarController?.tabBar.isHidden = false
+                        DispatchQueue.main.async {
+                            hideIndicator()
+                            self.navigationController?.popViewController(animated: true)
+                            self.tabBarController?.tabBar.isHidden = false
+                        }
                     case .failure(let failure):
                         print("Upload Failer :--->> ", failure.localizedDescription)
                     }
                 }
             }else{
                 if index == 2{
-                    let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                    let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                     let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
                     try? self.documents.dataRepresentation()?.write(to: docURL)
                 }
@@ -216,7 +218,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     @IBAction func btn_mainShare(_ sender: Any) {
         
-        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         let objectsToShare = [docURL]
@@ -255,7 +257,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     @IBAction func btn_printer(_ sender: Any) {
         
-        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         let info = UIPrintInfo(dictionary:nil)
@@ -329,7 +331,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         
         let data = pdfView.document?.dataRepresentation()
         
-        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         
         let docURL = documentDirectory.appendingPathComponent("\(modelPDF.pdfName)")
         
@@ -340,15 +342,15 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         }
         
         //get value of array:
-        let id = appDelegate.arrPDFinfo.firstIndex { info in
-            info.pdfName == self.modelPDF.pdfName
-        }
+//        let id = appDelegate.arrPDFinfo.firstIndex { info in
+//            info.pdfName == self.modelPDF.pdfName
+//        }
         
         //Update pdfSize and pageCount after insert each page:
-        appDelegate.arrPDFinfo[id ?? 0].pageCount = "\((pdfView.document?.pageCount) ?? 0) page"
-        appDelegate.arrPDFinfo[id ?? 0].size = "\(fileSize(fromPath: "\(docURL.path)") ?? "")"
+//        appDelegate.arrPDFinfo[id ?? 0].pageCount = "\((pdfView.document?.pageCount) ?? 0) page"
+//        appDelegate.arrPDFinfo[id ?? 0].size = "\(fileSize(fromPath: "\(docURL.path)") ?? "")"
         
-        appDelegate.setPdfInfoUserDefault()
+//        appDelegate.setPdfInfoUserDefault()
     }
     
     private func displayPdf() {
@@ -374,7 +376,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         let fileManager = FileManager()
         
         if editPDF == .add {
-            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
             print(modelPDF.pdfName)
             if fileManager.fileExists(atPath: docURL.path){
@@ -388,7 +390,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         }
         else{
 //            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
             if fileManager.fileExists(atPath: docURL.path){
                 pdfView.document = PDFDocument(url: docURL)
@@ -507,19 +509,19 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         let firstAction: UIAlertAction = UIAlertAction(title: "Yes", style: .default) { action -> Void in
 
             //get value of array:
-            let id = appDelegate.arrPDFinfo.firstIndex { info in
-                info.pdfName == self.modelPDF.pdfName
-            }
+//            let id = appDelegate.arrPDFinfo.firstIndex { info in
+//                info.pdfName == self.modelPDF.pdfName
+//            }
             
-            let idd = appDelegate.arrPDFinfo.remove(at: id ?? 0)
-            self.myClosure(appDelegate.arrPDFinfo)
-            appDelegate.setPdfInfoUserDefault()
+//            let idd = appDelegate.arrPDFinfo.remove(at: id ?? 0)
+//            self.myClosure(appDelegate.arrPDFinfo)
+//            appDelegate.setPdfInfoUserDefault()
             
             self.navigationController?.popViewController(animated: true)
             self.tabBarController?.tabBar.isHidden = false
             
             print("Yes pressed")
-            print(idd)
+//            print(idd)
         }
         let secondAction: UIAlertAction = UIAlertAction(title: "No", style: .default) { action -> Void in
             self.dismiss(animated: true, completion: nil)
@@ -543,7 +545,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         print(controller.isEditing)
         
-        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
         return docURL as QLPreviewItem

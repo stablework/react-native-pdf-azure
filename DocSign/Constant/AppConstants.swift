@@ -68,6 +68,10 @@ struct AppConstants {
         
         
         static let myDictionary                     = "myDictionary"
+        static let myContainer                      = "myContainer"
+        static let myBlobDetail                     = "myBlobDetail"
+        static let myRecentBlob                     = "myRecentBlob"
+        static let myFavouriteBlob                  = "myFavouriteBlob"
         
         static let UserInfoModelKey                 = "UserInfoModelKey"
         static let BannerDetailModelKey             = "BannerDetailModelKey"

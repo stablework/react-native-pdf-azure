@@ -10,7 +10,7 @@ import Foundation
 // Define the BlobProperties model for the properties of each Blob
 struct BlobProperties: Codable {
     let creationTime: String
-    let lastModified: String
+    var lastModified: String
     let etag: String
     let contentLength: Int
     let contentType: String
@@ -49,11 +49,13 @@ struct BlobProperties: Codable {
 
 // Define the Blob model to hold each Blob's name and properties
 struct Blob: Codable {
-    let name: String?
-    let properties: BlobProperties?
+    var containerName: String?
+    var name: String?
+    var properties: BlobProperties?
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case properties = "Properties"
+        case containerName = "containerName"
     }
 }
 

@@ -520,8 +520,8 @@ extension TabBarViewController: UIDocumentPickerDelegate {
     func navigateToDocumentDetailScreen(pdfDocument:PDFDocument, url:URL, pdfModel:PDFinfo){
         self.dismiss(animated: true)
         
-        appDelegate.arrPDFinfo.append(pdfModel)
-        appDelegate.setPdfInfoUserDefault()
+//        appDelegate.arrPDFinfo.append(pdfModel)
+//        appDelegate.setPdfInfoUserDefault()
         
         
         if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {

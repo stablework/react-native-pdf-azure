@@ -407,8 +407,8 @@ class ApiService: NSObject, XMLParserDelegate  {
         body += Data("--\(boundary)\r\n".utf8)
         body += Data("Content-Disposition:form-data; name=\"\(blobName)\"".utf8)
         
-        let documentDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let fileURL = documentDirectory.appendingPathComponent(containerName+blobName)
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentDirectory.appendingPathComponent(containerName+(blobName.replacingOccurrences(of: "/", with: "")))
         
         if let fileContent = try? Data(contentsOf: fileURL) {
           body += Data("; filename=\"\(blobName)\"\r\n".utf8)

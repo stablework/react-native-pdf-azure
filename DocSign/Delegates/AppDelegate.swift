@@ -18,27 +18,127 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Properties
     var window: UIWindow?
-    var arrPDFinfo = [PDFinfo]()
-    var container: [Container] = []
-    
-//    {
-//        get{
-//            return UserDefaults.standard.array(forKey: "container") as? [Container] ?? []
-//        }
-//        set{
-//            UserDefaults.standard.set(newValue, forKey: "container")
-//        }
-//    }
-    var blobdetailModel : [String:EnumerationBlobResults] = [:]
-//    {
-//        get{
-//            return UserDefaults.standard.dictionary(forKey: "container") as? [String:EnumerationBlobResults] ?? [:]
-//        }
-//        set{
-//            UserDefaults.standard.set(newValue, forKey: "container")
-//        }
-//    }
-//    EnumerationBlobResults(serviceEndpoint: "", containerName: "", blobs: BlobName(blob: []))
+    var recentBlob : [Blob] {
+        get{
+            if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myRecentBlob) {
+                do {
+                    // Create JSON Decoder
+                    let decoder = JSONDecoder()
+                    // Decode Note
+                    let container = try decoder.decode([Blob].self, from: data)
+                    return container
+                } catch {
+                    return []
+                }
+            }else{
+                return []
+            }
+        }
+        set{
+            do {
+                // Create JSON Encoder
+                let encoder = JSONEncoder()
+                // Encode Data
+                let data = try encoder.encode(newValue)
+                
+                // Write/Set Data
+                UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myRecentBlob)
+            } catch {
+                print("Unable to Encode data (\(error))")
+            }
+        }
+    }
+    var favouriteBlob : [Blob] {
+        get{
+            if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myFavouriteBlob) {
+                do {
+                    // Create JSON Decoder
+                    let decoder = JSONDecoder()
+                    // Decode Note
+                    let container = try decoder.decode([Blob].self, from: data)
+                    return container
+                } catch {
+                    return []
+                }
+            }else{
+                return []
+            }
+        }
+        set{
+            do {
+                // Create JSON Encoder
+                let encoder = JSONEncoder()
+                // Encode Data
+                let data = try encoder.encode(newValue)
+                
+                // Write/Set Data
+                UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myFavouriteBlob)
+            } catch {
+                print("Unable to Encode data (\(error))")
+            }
+        }
+    }
+//    var arrPDFinfo = [PDFinfo]()
+    var container: [Container] {
+        get{
+            if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myContainer) {
+                do {
+                    // Create JSON Decoder
+                    let decoder = JSONDecoder()
+                    // Decode Note
+                    let container = try decoder.decode([Container].self, from: data)
+                    return container
+                } catch {
+                    return []
+                }
+            }else{
+                return []
+            }
+        }
+        set{
+            do {
+                // Create JSON Encoder
+                let encoder = JSONEncoder()
+                // Encode Data
+                let data = try encoder.encode(newValue)
+                
+                // Write/Set Data
+                UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myContainer)
+            } catch {
+                print("Unable to Encode data (\(error))")
+            }
+        }
+    }
+    var blobdetailModel : [String:EnumerationBlobResults] {
+        get{
+            if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myBlobDetail) {
+                do {
+                    // Create JSON Decoder
+                    let decoder = JSONDecoder()
+                    // Decode Note
+                    let container = try decoder.decode([String:EnumerationBlobResults].self, from: data)
+                    return container
+                } catch {
+                    return [:]
+                }
+            }else{
+                return [:]
+            }
+        }
+        set{
+            do {
+                // Create JSON Encoder
+                let encoder = JSONEncoder()
+                // Encode Data
+                let data = try encoder.encode(newValue)
+                
+                // Write/Set Data
+                UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myBlobDetail)
+            } catch {
+                print("Unable to Encode data (\(error))")
+            }
+        }
+    }
     
     //For banner ads:
     var modelConfig = ClsRemoteConfig(fromDictionary: [:])
@@ -68,10 +168,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         dispatchgroup.enter()
         //        getRemoteConfig()
-        self.getPdfInfoUserDefault()
+//        self.getPdfInfoUserDefault()
         self.setHomePage()
         dispatchgroup.notify(queue: .main) {
-            self.getPdfInfoUserDefault()
+//            self.getPdfInfoUserDefault()
             //            if let isShowIntroScreen = getInt(key: ISSHOWINTROSCREEN), isShowIntroScreen == 1{
             self.setHomePage()
             //            }
@@ -87,34 +187,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func getPdfInfoUserDefault(){
-        if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myDictionary) {
-            do {
-                // Create JSON Decoder
-                let decoder = JSONDecoder()
-                // Decode Note
-                arrPDFinfo = try decoder.decode([PDFinfo].self, from: data)
-            } catch {
-                print("Unable to Decode data (\(error))")
-            }
-            print(data)
-            print(arrPDFinfo)
-        }
-    }
-    
-    func setPdfInfoUserDefault(){
-        do {
-            // Create JSON Encoder
-            let encoder = JSONEncoder()
-            // Encode Data
-            let data = try encoder.encode(self.arrPDFinfo)
-            
-            // Write/Set Data
-            UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myDictionary)
-        } catch {
-            print("Unable to Encode data (\(error))")
-        }
-    }
+//    func getPdfInfoUserDefault(){
+//        if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myDictionary) {
+//            do {
+//                // Create JSON Decoder
+//                let decoder = JSONDecoder()
+//                // Decode Note
+//                arrPDFinfo = try decoder.decode([PDFinfo].self, from: data)
+//            } catch {
+//                print("Unable to Decode data (\(error))")
+//            }
+//            print(data)
+//            print(arrPDFinfo)
+//        }
+//    }
+//    
+//    func setPdfInfoUserDefault(){
+//        do {
+//            // Create JSON Encoder
+//            let encoder = JSONEncoder()
+//            // Encode Data
+//            let data = try encoder.encode(self.arrPDFinfo)
+//            
+//            // Write/Set Data
+//            UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myDictionary)
+//        } catch {
+//            print("Unable to Encode data (\(error))")
+//        }
+//    }
     
     //MARK: - Register Notification Method
     func registerNotification(){
@@ -307,21 +407,23 @@ extension AppDelegate{
         let storageAccountName = storageAccountName
         showIndicator()
         ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
-            hideIndicator()
-            switch result {
-            case .success(let blobdetailModel):
-                print("Fetched containers: \(blobdetailModel)")
-                
-                // Update the otherFolder array and reload the table view
-                DispatchQueue.main.async {
-                    self.blobdetailModel[containerName] = blobdetailModel
-                    if isNotify{
-                        NotificationCenter.default.post(name: NSNotification.Name("setContainer"), object: nil)
+            DispatchQueue.main.async {
+                hideIndicator()
+                switch result {
+                case .success(let blobdetailModel):
+                    print("Fetched containers: \(blobdetailModel)")
+                    
+                    // Update the otherFolder array and reload the table view
+                    DispatchQueue.main.async {
+                        self.blobdetailModel[containerName] = blobdetailModel
+                        if isNotify{
+                            NotificationCenter.default.post(name: NSNotification.Name("setContainer"), object: nil)
+                        }
                     }
+                    
+                case .failure(let error):
+                    print("Error fetching containers: \(error.localizedDescription)")
                 }
-                
-            case .failure(let error):
-                print("Error fetching containers: \(error.localizedDescription)")
             }
         }
     }

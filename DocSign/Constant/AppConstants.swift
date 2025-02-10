@@ -7,7 +7,7 @@ import UIKit
 //import SVProgressHUD
 
 //MARK: Global Constant
-let AppName = "PDF Editor"
+let AppName = "Cook PDF App"
 let APP_VERSION: String = Bundle.main.releaseVersionNumber!
 let APP_BUILD_NUMBER: String = Bundle.main.buildVersionNumber!
 let APP_BUNDLE_IDENTIFIER = Bundle.main.bundleIdentifier
@@ -24,7 +24,7 @@ let storageAccountName = "cookerpdfus2"//"pdfstoreaccount"
 
 //MARK: - UIStoryboard
 
-let kAlertTitle = "PDF Editor"
+let kAlertTitle = "Cook PDF App"
 
 //MARK: - ERROR
 let CUSTOM_ERROR_DOMAIN         = "CUSTOM_ERROR_DOMAIN"
@@ -62,6 +62,7 @@ struct AppConstants {
     //placeholder image
     static let placeholderImage = UIImage(named: "placeholderImage") ?? UIImage()
     
+//    stru
     struct UserDefaultKeys {
         
         static let isUpgradePlan = "isUpgradePlan"

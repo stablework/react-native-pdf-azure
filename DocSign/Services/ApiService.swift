@@ -400,6 +400,27 @@ class ApiService: NSObject, XMLParserDelegate  {
             hideIndicator()
             return
         }
+        
+        if !ApiService.shared.isTokenValid() {
+            let tenantID = tenantID
+            let clientID = clientID
+            let clientSecret = clientSecret
+            
+            ApiService.shared.getStorageBearerToken(tenantID: tenantID, clientID: clientID, clientSecret: clientSecret) { result in
+                switch result {
+                case .success:
+                    self.uploadPDF(storageAccountName: storageAccountName, containerName: containerName, blobName:blobName, completion: completion)
+                    print("Token refreshed successfully")
+                case .failure(let error):
+                    completion(.failure(error))
+                    print("Failed to refresh token: \(error.localizedDescription)")
+                }
+            }
+            return
+        } else {
+            print("Token is still valid, no need to refresh")
+        }
+        
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         

@@ -14,6 +14,7 @@ import AppTrackingTransparency
 import Network
 //import OneSignalFramework
 import PusherSwift
+import Toast
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -210,7 +211,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
                     {
                         if let message = jsonArray["message"] as? String{
-                            displayAlertWithMessage(message)
+//                            displayAlertWithMessage(message)
+                            showToast(text: "Some files have been updated")
                         }
                        print(jsonArray)
                     } else {
@@ -238,7 +240,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
                     {
                         if let message = jsonArray["message"] as? String{
-                            displayAlertWithMessage(message)
+//                            displayAlertWithMessage(message)
+                            showToast(text: "Some files have been updated")
                         }
                        print(jsonArray)
                     } else {
@@ -266,7 +269,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
                     {
                         if let message = jsonArray["message"] as? String{
-                            displayAlertWithMessage(message)
+//                            displayAlertWithMessage(message)
+                            showToast(text: "Some files have been updated")
                         }
                        print(jsonArray)
                     } else {
@@ -294,7 +298,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
                     {
                         if let message = jsonArray["message"] as? String{
-                            displayAlertWithMessage(message)
+//                            displayAlertWithMessage(message)
+                            showToast(text: "Some files have been updated")
                         }
                        print(jsonArray)
                     } else {
@@ -456,7 +461,7 @@ extension AppDelegate{
                 
                 // Update the otherFolder array and reload the table view
                 DispatchQueue.main.async {
-                    self.container = containers
+                    self.container = containers.filter({!$0.name.hasPrefix("azure-")})
                     DispatchQueue.global(qos: .background).async {
                         for container in self.container {
                             self.fetchBlogs(containerName:container.name, isNotify: false)
@@ -514,5 +519,17 @@ extension AppDelegate:PusherDelegate{
         }else{
             print("Recived error: \(error.message)")
         }
+    }
+}
+
+func showToast(text:String){
+    let scene = UIApplication.shared.connectedScenes.first
+    if var topController = UIApplication.shared.keyWindow?.rootViewController {
+        while let presentedViewController = topController.presentedViewController {
+            topController = presentedViewController
+        }
+        
+        topController.view.makeToast(text, position: .top)
+        // topController should now be your topmost view controller
     }
 }

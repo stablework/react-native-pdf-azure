@@ -366,13 +366,17 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
                     if let newName = alertController.textFields?.first {
                         let newPdfName = newName.text ?? "newFile"
+                        if !appDelegate.internetIsAvailable{
+                            displayAlertWithMessage("No Internet Connection!!")
+                            return
+                        }
                         showIndicator()
                         do {
                             let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                            let originPath = cachesDirectory.appendingPathComponent(containerName + (dict.name ?? ""))
+                            let originPath = cachesDirectory.appendingPathComponent(containerName + (dict.name?.replacingOccurrences(of: "/", with: "") ?? ""))
                             
                             let fileName = originPath.deletingPathExtension().lastPathComponent
-                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName.replacingOccurrences(of: containerName, with: ""), with: newPdfName)
+                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName.replacingOccurrences(of: containerName, with: "").replacingOccurrences(of: "/", with: ""), with: newPdfName)
                             var destinationPath = cachesDirectory.appendingPathComponent(containerName+finalName.replacingOccurrences(of: "/", with: ""))
                             if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
                                 finalName += ".pdf"
@@ -587,7 +591,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             let dict = sortedPdfArray[indexPath.row]
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let docURL = documentDirectory.appendingPathComponent(dict.name ?? "")
+            let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
                 cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
                 cell.img_profile.image = UIImage(systemName: "document")
                 cell.btn_editPdf.isHidden = false
@@ -658,7 +662,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let dict = sortedPdfArray[indexPath.row]
                 
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let docURL = documentDirectory.appendingPathComponent(dict.name ?? "")
+                let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
                     cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
                     cell.img_profile.image = UIImage(systemName: "document")
                     cell.btn_editPdf.isHidden = false
@@ -690,10 +694,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             if let index = appDelegate.recentBlob.firstIndex(where: { $0.name == dict.name }) {
                 appDelegate.recentBlob[index].properties?.lastModified = dateFormatter.string(from: Date())
             }
-            pdfName = (dict.containerName ?? "")+(sortedPdfArray[indexPath.row].name ?? "")
+            pdfName = (dict.containerName ?? "")+(sortedPdfArray[indexPath.row].name ?? "").replacingOccurrences(of: "/", with: "")
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let tempURL = documentDirectory.appendingPathComponent(pdfName)
             if FileManager.default.fileExists(atPath: tempURL.path){
+                showIndicator()
                 let previewController = QLPreviewController()
                 previewController.dataSource = self
                 previewController.delegate = self
@@ -701,6 +706,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.present(previewController, animated: true, completion: nil)
             }else{
                 downloadPDF(containerName: dict.containerName ?? "", blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+                    showIndicator()
                     let previewController = QLPreviewController()
                     previewController.dataSource = self
                     previewController.delegate = self
@@ -766,6 +772,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(pdfName)
                 if FileManager.default.fileExists(atPath: tempURL.path){
+                    showIndicator()
                     let previewController = QLPreviewController()
                     previewController.dataSource = self
                     previewController.delegate = self
@@ -773,6 +780,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.present(previewController, animated: true, completion: nil)
                 }else{
                     downloadPDF(containerName: containerName, blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+                        showIndicator()
                         let previewController = QLPreviewController()
                         previewController.dataSource = self
                         previewController.delegate = self
@@ -923,5 +931,11 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
     
     func previewControllerDidDismiss(_ controller: QLPreviewController) {
         // Remove the temporary file after you're done
+        hideIndicator()
     }
+    
+    func previewControllerDidFinish(_ controller: QLPreviewController) {
+         // Stop the activity indicator once preview is presented
+        hideIndicator()
+     }
 }

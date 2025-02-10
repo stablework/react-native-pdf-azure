@@ -245,6 +245,11 @@ class ApiService: NSObject, XMLParserDelegate  {
     
     func PDFDownLoad(storageAccountName: String, containerName: String, blobName:String, completion: @escaping (Result<Data, Error>) -> Void) {
         // Construct the URL
+        if !appDelegate.internetIsAvailable{
+            displayAlertWithMessage("No Internet Connection!!")
+            hideIndicator()
+            return
+        }
         if !ApiService.shared.isTokenValid() {
             let tenantID = tenantID
             let clientID = clientID
@@ -400,7 +405,11 @@ class ApiService: NSObject, XMLParserDelegate  {
     }
     
     func uploadPDF(storageAccountName: String, containerName: String, blobName:String, completion: @escaping (Result<String, Error>) -> Void){
-        
+        if !appDelegate.internetIsAvailable{
+            displayAlertWithMessage("No Internet Connection!!")
+            hideIndicator()
+            return
+        }
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         

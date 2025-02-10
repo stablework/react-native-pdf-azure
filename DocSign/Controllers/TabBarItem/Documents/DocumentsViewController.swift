@@ -48,6 +48,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     var pdfName:String = ""
+    var nameOfPDF:String = ""
     var pdfURL:URL = URL(fileURLWithPath: "")
         
     var dict: [[String: Any]] = []
@@ -292,6 +293,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let dateTime = dateFormatter.string(from: currentDate)
                 
                 self.pdfName = containerName+(curFile.name?.replacingOccurrences(of: "/", with: "") ?? "")
+                self.nameOfPDF = curFile.name ?? ""
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
                 let pdfDocument = PDFDocument(url: tempURL) ?? PDFDocument()
@@ -698,6 +700,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 appDelegate.recentBlob[index].properties?.lastModified = dateFormatter.string(from: Date())
             }
             pdfName = (dict.containerName ?? "")+(sortedPdfArray[indexPath.row].name ?? "").replacingOccurrences(of: "/", with: "")
+            nameOfPDF = (sortedPdfArray[indexPath.row].name ?? "")
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let tempURL = documentDirectory.appendingPathComponent(pdfName)
             if FileManager.default.fileExists(atPath: tempURL.path){
@@ -772,6 +775,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 } ?? []
                 
                 pdfName = containerName+(sortedPdfArray[indexPath.row].name?.replacingOccurrences(of: "/", with: "") ?? "")
+                nameOfPDF = sortedPdfArray[indexPath.row].name ?? ""
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let tempURL = documentDirectory.appendingPathComponent(pdfName)
                 if FileManager.default.fileExists(atPath: tempURL.path){
@@ -923,7 +927,9 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
         print(controller.isEditing)
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let tempURL = documentDirectory.appendingPathComponent(pdfName)
-        return tempURL as QLPreviewItem
+        
+        
+        return PreviewItem(url: tempURL, title: (nameOfPDF.split(separator: "/")).last?.string ?? "")
     }
     
     func previewController(_ controller: QLPreviewController, didUpdateContentsOf previewItem: QLPreviewItem) {

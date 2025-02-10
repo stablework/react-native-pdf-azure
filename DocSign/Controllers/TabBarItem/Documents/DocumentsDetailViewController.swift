@@ -183,7 +183,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     }
     
     @IBAction func btn_back(_ sender: Any) {
-        displayAlertWithTitle(AppName, andMessage: "Please select a save option", buttons: ["Finish and Upload", "Save as Draft (Offline)", "Back without saving"]) { index in
+        displayAlertWithTitle(AppName, andMessage: "Please select a save option", buttons: ["Finish and Upload", "Save as Draft (Offline)", "Back without saving", "Cancel"]) { index in
             if index == 0{
                 showIndicator()
                 ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: self.modelPDF.blobName) { result in
@@ -206,8 +206,10 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
                     let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
                     try? self.documents.dataRepresentation()?.write(to: docURL)
                 }
-                self.navigationController?.popViewController(animated: true)
-                self.tabBarController?.tabBar.isHidden = false
+                if index != 3{
+                    self.navigationController?.popViewController(animated: true)
+                    self.tabBarController?.tabBar.isHidden = false
+                }
             }
         }
     }
@@ -549,7 +551,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let docURL = documentDirectory.appendingPathComponent(modelPDF.pdfName)
         
-        return docURL as QLPreviewItem
+        return PreviewItem(url: docURL, title: (modelPDF.pdfName.split(separator: "/")).last?.string ?? "")
     }
     
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
@@ -712,5 +714,14 @@ extension DocumentsDetailViewController: UIDocumentPickerDelegate {
             self.comeFromCellPDF()
             self.displayPdf()
         }
+    }
+}
+
+class PreviewItem: NSObject, QLPreviewItem {
+    var previewItemURL: URL?
+    var previewItemTitle: String?
+    init(url: URL? = nil, title: String? = nil) {
+        previewItemURL = url
+        previewItemTitle = title
     }
 }

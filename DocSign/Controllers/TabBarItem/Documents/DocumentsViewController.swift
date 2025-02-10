@@ -56,7 +56,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
     var currentFolderPath: String = ""{
         didSet{
             let lastPath = currentFolderPath.split(separator: "/").last?.string ?? ""
-            lblNavigationTitle.text = lastPath.isEmpty ? "Cook PDF App" : lastPath
+            lblNavigationTitle.text = lastPath.isEmpty ? containerName.isEmpty ? "Cook PDF App" : containerName : lastPath
         }
     }
 
@@ -167,12 +167,14 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 currentFolderPath = path.joined(separator: "/")
             }else {
                 self.currentFolderPath = ""
+                self.containerName = ""
                 self.showFixedFolders = true
                 backBtn.isHidden = true
             }
             self.tblView_documents.reloadData()
         }else {
             self.currentFolderPath = ""
+            self.containerName = ""
             self.showFixedFolders = true
             backBtn.isHidden = true
             self.tblView_documents.reloadData()
@@ -374,12 +376,13 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         do {
                             let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                             let originPath = cachesDirectory.appendingPathComponent(containerName + (dict.name?.replacingOccurrences(of: "/", with: "") ?? ""))
-                            
-                            let fileName = originPath.deletingPathExtension().lastPathComponent
-                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName.replacingOccurrences(of: containerName, with: "").replacingOccurrences(of: "/", with: ""), with: newPdfName)
-                            var destinationPath = cachesDirectory.appendingPathComponent(containerName+finalName.replacingOccurrences(of: "/", with: ""))
+                            let tempPath = cachesDirectory.appendingPathComponent(containerName + (dict.name ?? ""))
+                            let fileName = tempPath.deletingPathExtension().lastPathComponent.replacingOccurrences(of: containerName, with: "")
+                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName)
+                            var finalNameWithOutSlash = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName).replacingOccurrences(of: "/", with: "")
+                            var destinationPath = cachesDirectory.appendingPathComponent(containerName+finalNameWithOutSlash.replacingOccurrences(of: "/", with: ""))
                             if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
-                                finalName += ".pdf"
+                                finalNameWithOutSlash += ".pdf"
                                 destinationPath = cachesDirectory.appendingPathExtension(".pdf")
                             }
                             if FileManager.default.fileExists(atPath: originPath.path){
@@ -405,17 +408,17 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                             if let index = appDelegate.favouriteBlob.firstIndex(where: {$0.name == curFile.name}){
                                 appDelegate.favouriteBlob[index] = blob
                             }
-                            
+                            print("KKK;::____>>",containerName, (dict.name ?? ""), finalNameWithOutSlash)
                             ApiService.shared.deletePDF(storageAccountName: storageAccountName, containerName: containerName, blobName: (dict.name ?? "")) { _ in
                                 DispatchQueue.main.async {
                                     ApiService.shared.uploadPDF(storageAccountName: storageAccountName, containerName: containerName, blobName: finalName) { result in
+                                        hideIndicator()
                                         DispatchQueue.main.async {
                                             switch result {
                                             case .success(_):
                                                 print("Upload Success :--->>> \(containerName) / \(newPdfName)")
                                                 appDelegate.fetchBlogs(containerName:containerName)
                                             case .failure(let failure):
-                                                hideIndicator()
                                                 print("Upload Failer :--->> ", failure.localizedDescription)
                                             }
                                         }

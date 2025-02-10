@@ -149,7 +149,6 @@ class ApiService: NSObject, XMLParserDelegate  {
             let decoder = XMLDecoder()
             do {
                 let enumerationResults = try decoder.decode(EnumerationContainerResults.self, from: data)
-                print(enumerationResults)
                 completion(.success(enumerationResults.containers.containerName ?? []))
             } catch {
                 completion(.failure(ApiError.parsingFailed))
@@ -231,8 +230,6 @@ class ApiService: NSObject, XMLParserDelegate  {
             let decoder = XMLDecoder()
             do {
                 let enumerationResults = try decoder.decode(EnumerationBlobResults.self, from: data)
-                print(url)
-                print(enumerationResults)
                 completion(.success(enumerationResults))
             } catch {
                 completion(.failure(ApiError.parsingFailed))
@@ -319,13 +316,6 @@ class ApiService: NSObject, XMLParserDelegate  {
                 completion(.failure(ApiError.noData))
                 return
             }
-            
-            print(request.url)
-            print(request.value(forHTTPHeaderField: "Authorization"))
-            print(request.value(forHTTPHeaderField: "x-ms-version"))
-            print(request.value(forHTTPHeaderField: "x-ms-date"))
-            print(request.value(forHTTPHeaderField: "x-ms-blob-type"))
-            print(request.value(forHTTPHeaderField: "Content-Type"))
             completion(.success(data))
         }
         
@@ -353,7 +343,6 @@ class ApiService: NSObject, XMLParserDelegate  {
         } else {
             print("Token is still valid, no need to refresh")
         }
-//        https://{{storageaccountname}}.blob.core.windows.net/{{containername}}/{{blobname}}.pdf
         let urlString = "https://\(storageAccountName).blob.core.windows.net/\(containerName)/\(blobName)"
         guard let url = URL(string: urlString) else {
             completion(.failure(ApiError.invalidURL))
@@ -389,6 +378,7 @@ class ApiService: NSObject, XMLParserDelegate  {
         
         // Perform API call
         let task = session.dataTask(with: request) { data, response, error in
+            print(response)
             if let error = error {
                 completion(.failure(error))
                 return
@@ -457,6 +447,7 @@ class ApiService: NSObject, XMLParserDelegate  {
         }
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            print(response)
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 completion(.failure(ApiError.invalidResponse))
                 return

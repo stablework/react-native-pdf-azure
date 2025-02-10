@@ -13,6 +13,7 @@ import UIKit
 import AppTrackingTransparency
 import Network
 //import OneSignalFramework
+import PusherSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -149,17 +150,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let dispatchgroup = DispatchGroup()
     let monitor = NWPathMonitor()
     var internetIsAvailable = false
+    
+    //Pusher
+    var pusher:Pusher? = nil
+    var appKey:String = "048f35c4f35c4c9c67f7"
+    var pusherSecret:String = "b044bfcb4c1e2a3524b6"
+    var pusherChannel:String = "blob-notifications"
+    var cluster:String = "us2"
+    
+//    app_id = "1933719"
+//    key = "048f35c4f35c4c9c67f7"
+//    secret = "b044bfcb4c1e2a3524b6"
+//    cluster = "us2"
     //MARK: - AppDelegates
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        pusherSetup()
         checkAndFetchToken()
-        //        FirebaseApp.configure()
-        
-        
-        //        OneSignal.Debug.setLogLevel(.LL_VERBOSE)
-        // OneSignal initialization
-        //          OneSignal.initialize(ONE_SIGNAL_APP_ID, withLaunchOptions: launchOptions)
-        
         if (launchOptions != nil)
         {
             let dictionary:NSDictionary = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as! NSDictionary
@@ -170,24 +177,142 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         dispatchgroup.enter()
-        //        getRemoteConfig()
-//        self.getPdfInfoUserDefault()
         self.setHomePage()
         dispatchgroup.notify(queue: .main) {
-//            self.getPdfInfoUserDefault()
-            //            if let isShowIntroScreen = getInt(key: ISSHOWINTROSCREEN), isShowIntroScreen == 1{
             self.setHomePage()
-            //            }
-            
-            //            else{
-            //                self.setAppIntro()
-            //            }
         }
         
         //sleep(2)
         fetchContainers()
         setNetworkMonitor()
         return true
+    }
+    
+    func pusherSetup(){
+        
+        pusher = Pusher(key: appKey, options: PusherClientOptions(authMethod: .inline(secret: pusherSecret), host: .cluster(cluster)))
+        pusher?.delegate = self
+        pusher?.connect()
+        
+        let myChannel = pusher?.subscribe(channelName: "blob-notifications")
+        _ = myChannel?.bind(eventName: "BlobCreated", eventCallback: { event in
+            var message = "Received event: '\(event.eventName)'"
+            if let channelName = event.channelName{
+                message += "on channel '\(channelName)'"
+            }
+            if let userId = event.userId{
+                message += "from user '\(userId)'"
+            }
+            if let datastr = event.data{
+                message += "with data '\(datastr)'"
+                let data = datastr.data(using: .utf8)!
+                do {
+                    if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
+                    {
+                        if let message = jsonArray["message"] as? String{
+                            displayAlertWithMessage(message)
+                        }
+                       print(jsonArray)
+                    } else {
+                        print("bad json")
+                    }
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+            print("pusher :::::::======>>>>>>> ",message)
+            self.fetchContainers()
+        })
+        _ = myChannel?.bind(eventName: "BlobDeleted", eventCallback: { event in
+            var message = "Received event: '\(event.eventName)'"
+            if let channelName = event.channelName{
+                message += "on channel '\(channelName)'"
+            }
+            if let userId = event.userId{
+                message += "from user '\(userId)'"
+            }
+            if let datastr = event.data{
+                message += "with data '\(datastr)'"
+                let data = datastr.data(using: .utf8)!
+                do {
+                    if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
+                    {
+                        if let message = jsonArray["message"] as? String{
+                            displayAlertWithMessage(message)
+                        }
+                       print(jsonArray)
+                    } else {
+                        print("bad json")
+                    }
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+            print("pusher :::::::======>>>>>>> ",message)
+            self.fetchContainers()
+        })
+        _ = myChannel?.bind(eventName: "DirectoryCreated", eventCallback: { event in
+            var message = "Received event: '\(event.eventName)'"
+            if let channelName = event.channelName{
+                message += "on channel '\(channelName)'"
+            }
+            if let userId = event.userId{
+                message += "from user '\(userId)'"
+            }
+            if let datastr = event.data{
+                message += "with data '\(datastr)'"
+                let data = datastr.data(using: .utf8)!
+                do {
+                    if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
+                    {
+                        if let message = jsonArray["message"] as? String{
+                            displayAlertWithMessage(message)
+                        }
+                       print(jsonArray)
+                    } else {
+                        print("bad json")
+                    }
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+            print("pusher :::::::======>>>>>>> ",message)
+            self.fetchContainers()
+        })
+        _ = myChannel?.bind(eventName: "DirectoryDeleted", eventCallback: { event in
+            var message = "Received event: '\(event.eventName)'"
+            if let channelName = event.channelName{
+                message += "on channel '\(channelName)'"
+            }
+            if let userId = event.userId{
+                message += "from user '\(userId)'"
+            }
+            if let datastr = event.data{
+                message += "with data '\(datastr)'"
+                let data = datastr.data(using: .utf8)!
+                do {
+                    if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? Dictionary<String,Any>
+                    {
+                        if let message = jsonArray["message"] as? String{
+                            displayAlertWithMessage(message)
+                        }
+                       print(jsonArray)
+                    } else {
+                        print("bad json")
+                    }
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+            print("pusher :::::::======>>>>>>> ",message)
+            self.fetchContainers()
+        })
+        
+        let onMemberAdded = { (member:PusherPresenceChannelMember) in
+            print(member)
+        }
+        let chan = pusher?.subscribe(channelName: "", onMemberAdded: onMemberAdded)
+        chan?.trigger(eventName: "", data: ["test":"some value"])
     }
     
     func setNetworkMonitor(){
@@ -199,34 +324,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let queue = DispatchQueue(label: "NetworkMonitor")
         monitor.start(queue: queue)
     }
-//    func getPdfInfoUserDefault(){
-//        if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myDictionary) {
-//            do {
-//                // Create JSON Decoder
-//                let decoder = JSONDecoder()
-//                // Decode Note
-//                arrPDFinfo = try decoder.decode([PDFinfo].self, from: data)
-//            } catch {
-//                print("Unable to Decode data (\(error))")
-//            }
-//            print(data)
-//            print(arrPDFinfo)
-//        }
-//    }
-//    
-//    func setPdfInfoUserDefault(){
-//        do {
-//            // Create JSON Encoder
-//            let encoder = JSONEncoder()
-//            // Encode Data
-//            let data = try encoder.encode(self.arrPDFinfo)
-//            
-//            // Write/Set Data
-//            UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultKeys.myDictionary)
-//        } catch {
-//            print("Unable to Encode data (\(error))")
-//        }
-//    }
     
     //MARK: - Register Notification Method
     func registerNotification(){
@@ -274,44 +371,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 //MARK: - Get Remote Config, Check App version and, Home screen setup method
 extension AppDelegate{
-//    func getRemoteConfig(){
-//        showIndicator()
-////        let remoteConfig = RemoteConfig.remoteConfig()
-////        let settings = RemoteConfigSettings()
-//        settings.minimumFetchInterval = 0
-//        remoteConfig.configSettings = settings
-//        
-//        remoteConfig.fetch { (status, error) -> Void in
-//            if status == .success {
-//                remoteConfig.activate { changed, error in
-////                    if let dictConfig = RemoteConfig.remoteConfig()
-//                        .configValue(forKey: "config_ios").jsonValue as? [String : Any] {
-//                        self.modelConfig = ClsRemoteConfig(fromDictionary: dictConfig)
-//                        if self.isHideAllAds {
-//                            self.modelConfig.isShowiOSAds = false
-//                        }
-//
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-////                            self.requestPermission()
-//                            self.dispatchgroup.leave()
-//                        }
-//                    }else{
-//                        hideIndicator()
-//                        displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
-//                            self.getRemoteConfig()
-//                            self.dispatchgroup.leave()
-//                        }
-//                    }
-//                }
-//            }else{
-//                hideIndicator()
-//                displayAlertWithTitle(APP_NAME, andMessage: INTERNET_ERROR, buttons: ["Try Again"]) { _ in
-//                    self.getRemoteConfig()
-//                    self.dispatchgroup.leave()
-//                }
-//            }
-//        }
-//    }
     
     func setAppIntro(){
         DispatchQueue.main.async {
@@ -388,9 +447,9 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
 extension AppDelegate{
     private func fetchContainers() {
         let storageAccountName = storageAccountName
-        showIndicator()
+//        showIndicator()
         ApiService.shared.listStorageContents(storageAccountName: storageAccountName) { result in
-            hideIndicator()
+//            hideIndicator()
             switch result {
             case .success(let containers):
                 print("Fetched containers: \(containers)")
@@ -417,26 +476,43 @@ extension AppDelegate{
   
     func fetchBlogs(containerName:String, isNotify:Bool = true) {
         let storageAccountName = storageAccountName
-        showIndicator()
+//        showIndicator()
         ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
             DispatchQueue.main.async {
-                hideIndicator()
+//                hideIndicator()
                 switch result {
                 case .success(let blobdetailModel):
-                    print("Fetched containers: \(blobdetailModel)")
-                    
-                    // Update the otherFolder array and reload the table view
                     DispatchQueue.main.async {
                         self.blobdetailModel[containerName] = blobdetailModel
-                        if isNotify{
+//                        if isNotify{
                             NotificationCenter.default.post(name: NSNotification.Name("setContainer"), object: nil)
-                        }
+//                        }
                     }
                     
                 case .failure(let error):
                     print("Error fetching containers: \(error.localizedDescription)")
                 }
             }
+        }
+    }
+}
+
+extension AppDelegate:PusherDelegate{
+    func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {
+        print("old: \(old.stringValue()), new: \(new.stringValue())")
+    }
+    
+    func subscribedToChannel(name: String) {
+        print("Subscribed to \(name)")
+    }
+    func debugLog(message: String) {
+        print(message)
+    }
+    func receivedError(error: PusherError) {
+        if let code = error.code{
+            print("Recived error: (\(code)) \(error.message)")
+        }else{
+            print("Recived error: \(error.message)")
         }
     }
 }

@@ -183,7 +183,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     }
     
     @IBAction func btn_back(_ sender: Any) {
-        displayAlertWithTitle("Cook PDF App", andMessage: "Are you want to upload this PDF file", buttons: ["Finish and Upload", "Save as Draft", "Cancel"]) { index in
+        displayAlertWithTitle(AppName, andMessage: "Please select a save option", buttons: ["Finish and Upload", "Save as Draft (Offline)", "Back without saving"]) { index in
             if index == 0{
                 showIndicator()
                 ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: self.modelPDF.blobName) { result in
@@ -504,7 +504,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     
     //AlertBox when tapped on btn_delete:
     func delete_alertAction(){
-        let actionSheetController: UIAlertController = UIAlertController(title: "PDF Editor", message: "Are you sure you want to delete \(modelPDF.pdfName)?", preferredStyle: .alert)
+        let actionSheetController: UIAlertController = UIAlertController(title: AppName, message: "Are you sure you want to delete \(modelPDF.pdfName)?", preferredStyle: .alert)
 
         // create an action:
         let firstAction: UIAlertAction = UIAlertAction(title: "Yes", style: .default) { action -> Void in

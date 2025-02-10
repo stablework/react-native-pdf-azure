@@ -68,6 +68,7 @@
 		04D60ED029A3337400E7FCBF /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D60ECF29A3337400E7FCBF /* PrivacyPolicyViewController.swift */; };
 		04DACD21299F97BD00426327 /* whatPdfEditorOffers.gif in Resources */ = {isa = PBXBuildFile; fileRef = 04DACD20299F97BD00426327 /* whatPdfEditorOffers.gif */; };
 		501754A92D59DD2000FA764C /* PusherSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 501754A82D59DD2000FA764C /* PusherSwift */; };
+		501754AF2D5A2B2600FA764C /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 501754AE2D5A2B2600FA764C /* Toast */; };
 		84F3D8482D35A2070053A813 /* PDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3D8472D35A1E90053A813 /* PDFViewController.swift */; };
 		8883CEEB2BC938BD005220E4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */; };
 		88D36F6B29A4F01900225810 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D36F6A29A4F01900225810 /* NotificationService.swift */; };
@@ -196,6 +197,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				501754AF2D5A2B2600FA764C /* Toast in Frameworks */,
 				965C7D8EACFB79AE81D8A0E1 /* Pods_DocSign.framework in Frameworks */,
 				501754A92D59DD2000FA764C /* PusherSwift in Frameworks */,
 			);
@@ -553,6 +555,7 @@
 			mainGroup = 04C81C89298D0B92008FC605;
 			packageReferences = (
 				501754A72D59DD2000FA764C /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
+				501754AD2D5A2B2600FA764C /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 04C81C93298D0B93008FC605 /* Products */;
@@ -1068,6 +1071,14 @@
 				minimumVersion = 10.1.0;
 			};
 		};
+		501754AD2D5A2B2600FA764C /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalessec/Toast-Swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1075,6 +1086,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 501754A72D59DD2000FA764C /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */;
 			productName = PusherSwift;
+		};
+		501754AE2D5A2B2600FA764C /* Toast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 501754AD2D5A2B2600FA764C /* XCRemoteSwiftPackageReference "Toast-Swift" */;
+			productName = Toast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

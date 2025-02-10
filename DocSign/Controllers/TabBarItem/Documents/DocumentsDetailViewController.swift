@@ -196,6 +196,7 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
                             self.tabBarController?.tabBar.isHidden = false
                         }
                     case .failure(let failure):
+                        hideIndicator()
                         print("Upload Failer :--->> ", failure.localizedDescription)
                     }
                 }

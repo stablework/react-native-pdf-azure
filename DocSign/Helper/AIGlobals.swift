@@ -13,7 +13,7 @@ import UIKit
 //MARK: - GENERAL
 
 let appDelegate : AppDelegate = UIApplication.shared.delegate as! AppDelegate
-let APP_NAME = "PDF Editor"
+let APP_NAME = "Cook PDF App"
 
 //MARK:- Storyboard Outlet
 let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)

@@ -67,6 +67,7 @@
 		04C81CD1298D313D008FC605 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C81CD0298D313D008FC605 /* SettingsViewController.swift */; };
 		04D60ED029A3337400E7FCBF /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D60ECF29A3337400E7FCBF /* PrivacyPolicyViewController.swift */; };
 		04DACD21299F97BD00426327 /* whatPdfEditorOffers.gif in Resources */ = {isa = PBXBuildFile; fileRef = 04DACD20299F97BD00426327 /* whatPdfEditorOffers.gif */; };
+		501754A92D59DD2000FA764C /* PusherSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 501754A82D59DD2000FA764C /* PusherSwift */; };
 		84F3D8482D35A2070053A813 /* PDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3D8472D35A1E90053A813 /* PDFViewController.swift */; };
 		8883CEEB2BC938BD005220E4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8883CEEA2BC938BD005220E4 /* PrivacyInfo.xcprivacy */; };
 		88D36F6B29A4F01900225810 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D36F6A29A4F01900225810 /* NotificationService.swift */; };
@@ -196,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				965C7D8EACFB79AE81D8A0E1 /* Pods_DocSign.framework in Frameworks */,
+				501754A92D59DD2000FA764C /* PusherSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,6 +551,9 @@
 				Base,
 			);
 			mainGroup = 04C81C89298D0B92008FC605;
+			packageReferences = (
+				501754A72D59DD2000FA764C /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 04C81C93298D0B93008FC605 /* Products */;
 			projectDirPath = "";
@@ -1053,6 +1058,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		501754A72D59DD2000FA764C /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pusher/pusher-websocket-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		501754A82D59DD2000FA764C /* PusherSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 501754A72D59DD2000FA764C /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */;
+			productName = PusherSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 04C81C8A298D0B92008FC605 /* Project object */;
 }

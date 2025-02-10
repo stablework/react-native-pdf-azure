@@ -11,6 +11,7 @@ import UIKit
 //import FirebaseCrashlytics
 //import FirebaseRemoteConfig
 import AppTrackingTransparency
+import Network
 //import OneSignalFramework
 
 @main
@@ -146,6 +147,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var isHideAllAds:Bool = false
     var fireData = clsFirebaseModel(fromDictionary: [:])
     let dispatchgroup = DispatchGroup()
+    let monitor = NWPathMonitor()
+    var internetIsAvailable = false
     //MARK: - AppDelegates
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -183,10 +186,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //sleep(2)
         fetchContainers()
-        
+        setNetworkMonitor()
         return true
     }
     
+    func setNetworkMonitor(){
+        // Start monitoring network path updates
+        monitor.pathUpdateHandler = { path in
+            self.internetIsAvailable = path.status == .satisfied
+        }
+
+        let queue = DispatchQueue(label: "NetworkMonitor")
+        monitor.start(queue: queue)
+    }
 //    func getPdfInfoUserDefault(){
 //        if let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultKeys.myDictionary) {
 //            do {

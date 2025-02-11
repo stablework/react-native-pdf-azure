@@ -552,25 +552,35 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             return section == 0 ? fixedFolders.count : appDelegate.container.count
         } else {
             let slashCount = self.currentFolderPath.split(separator: "/").count
+            let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
             
             let blogSlashCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
+                if 0 <= (slashCount-1){
+                    return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
+                }
                 return (arrSplit?.count ?? 0) == (slashCount+2)
             }).count
             
             
-            let arrFolderNames = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
+            let arrFolderNames:[String] = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
+                if 0 <= (slashCount-1){
+                    return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
+                }
                 return (arrSplit?.count ?? 0) == (slashCount+2)
             }).map { Blob in
-                (Blob.name?.split(separator: "/"))?.first?.string ?? ""
+                var name:[String.SubSequence] = (Blob.name?.split(separator: "/")) ?? []
+                name.removeLast()
+                return name.last?.string ?? ""
             } ?? []
             
-            let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys
+            let arrFolder:[String] = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
             
             let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
-                return arrSplit?.count == (slashCount+1)
+                
+                return arrSplit?.count == (slashCount+1) && (arrSplit?[slashCount-1] ?? "") == lastPath
             }).count ?? 0
             
             return section == 0 ? arrFolder.count : documentCount
@@ -631,8 +641,12 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.lbl_fileNum.isHidden = true
             if indexPath.section == 0 {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
+                let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
                 let arrFolderNames = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
+                    if 0 <= (slashCount-1){
+                        return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
+                    }
                     return (arrSplit?.count ?? 0) == (slashCount+2)
                 }).map { Blob in
                     var blobname = (Blob.name?.split(separator: "/"))
@@ -652,10 +666,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
                 
                 let slashCount = self.currentFolderPath.split(separator: "/").count
+                let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
                 
                 let sortedPdfArray = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
-                    return arrSplit?.count == (slashCount+1)
+                    return arrSplit?.count == (slashCount+1) && (arrSplit?[slashCount-1] ?? "") == lastPath
                 }).sorted { (pdf1, pdf2) -> Bool in
                     guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
                           let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {
@@ -755,7 +770,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
                     return arrSplit?.count == (slashCount+2)
-                }).first
+                })[indexPath.row]
                 
                 var name = documentCount?.name?.split(separator: "/")
                 name?.removeLast()
@@ -763,9 +778,11 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.tblView_documents.reloadData()
             } else {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
+                let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
+                
                 let sortedPdfArray = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
-                    return arrSplit?.count == (slashCount+1)
+                    return arrSplit?.count == (slashCount+1) && (arrSplit?[slashCount-1] ?? "") == lastPath
                 }).sorted { (pdf1, pdf2) -> Bool in
                     guard let date1 = dateFormatter.date(from: pdf1.properties?.lastModified ?? ""),
                           let date2 = dateFormatter.date(from: pdf2.properties?.lastModified ?? "") else {

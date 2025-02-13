@@ -553,36 +553,34 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             let slashCount = self.currentFolderPath.split(separator: "/").count
             let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
-            
-            let blogSlashCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
+            let arrFilter = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
-                if 0 <= (slashCount-1){
-                    return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
+                if arrSplit?.count ?? 0 > slashCount+1{
+                    if slashCount-1 >= 0{
+                        print(arrSplit, slashCount-1, (arrSplit?[slashCount-1] ?? "") == lastPath)
+                        return (arrSplit?[slashCount-1] ?? "") == lastPath
+                    }else{
+                        return true
+                    }
+                }else{
+                    return false
                 }
-                return (arrSplit?.count ?? 0) == (slashCount+2)
-            }).count
+            })
             
-            
-            let arrFolderNames:[String] = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
-                let arrSplit = (blob.name?.split(separator: "/"))
-                if 0 <= (slashCount-1){
-                    return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
-                }
-                return (arrSplit?.count ?? 0) == (slashCount+2)
-            }).map { Blob in
-                var name:[String.SubSequence] = (Blob.name?.split(separator: "/")) ?? []
-                name.removeLast()
-                return name.last?.string ?? ""
+            let arrFolderNames:[String] = arrFilter?.map{ Blob in
+                let name:[String.SubSequence] = (Blob.name?.split(separator: "/")) ?? []
+                return name[slashCount].string
             } ?? []
             
             let arrFolder:[String] = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
             
+            print("\n\n\n------ documentCount -------")
             let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                 let arrSplit = (blob.name?.split(separator: "/"))
-                
+                print(arrSplit, arrSplit?.count, (slashCount+1), arrSplit?.count == (slashCount+1), slashCount, lastPath)
                 return arrSplit?.count == (slashCount+1) && (arrSplit?[slashCount-1] ?? "") == lastPath
             }).count ?? 0
-            
+            print("------ documentCount -------")
             return section == 0 ? arrFolder.count : documentCount
         }
         
@@ -608,9 +606,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
                 cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
-                cell.img_profile.image = UIImage(systemName: "document")
+                cell.img_profile.image = UIImage(systemName: "doc")
                 cell.btn_editPdf.isHidden = false
-                
                 cell.selectionStyle = .gray
                 cell.btn_editPdf.showsMenuAsPrimaryAction = true
                 let pdfDocument = PDFDocument(url: docURL)
@@ -642,19 +639,26 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             if indexPath.section == 0 {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
                 let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
-                let arrFolderNames = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
+                let arrFilter = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
-                    if 0 <= (slashCount-1){
-                        return (arrSplit?.count ?? 0) == (slashCount+2) && (arrSplit?[slashCount-1] ?? "") == lastPath
+                    if arrSplit?.count ?? 0 > slashCount+1{
+                        if slashCount-1 >= 0{
+                            print(arrSplit, slashCount-1, (arrSplit?[slashCount-1] ?? "") == lastPath)
+                            return (arrSplit?[slashCount-1] ?? "") == lastPath
+                        }else{
+                            return true
+                        }
+                    }else{
+                        return false
                     }
-                    return (arrSplit?.count ?? 0) == (slashCount+2)
-                }).map { Blob in
-                    var blobname = (Blob.name?.split(separator: "/"))
-                    blobname?.removeLast()
-                    return blobname?.last?.string ?? ""
-                } ?? [String]()
+                })
                 
-                let arrFolder = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
+                let arrFolderNames:[String] = arrFilter?.map{ Blob in
+                    let name:[String.SubSequence] = (Blob.name?.split(separator: "/")) ?? []
+                    return name[slashCount].string
+                } ?? []
+                
+                let arrFolder:[String] = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
                 
                 cell.lbl_title.text = arrFolder[indexPath.row]///dict.name ?? ""
                 cell.img_profile.image = UIImage(systemName: "folder")
@@ -684,7 +688,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
                     cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
-                    cell.img_profile.image = UIImage(systemName: "document")
+                    cell.img_profile.image = UIImage(systemName: "doc")
                     cell.btn_editPdf.isHidden = false
                     cell.selectionStyle = .gray
                     cell.btn_editPdf.showsMenuAsPrimaryAction = true
@@ -767,14 +771,32 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             if indexPath.section == 0 {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
-                let documentCount = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
+                let lastPath = self.currentFolderPath.split(separator: "/").last ?? ""
+                let arrFilter = appDelegate.blobdetailModel[containerName]?.blobs.blob.filter({ blob in
                     let arrSplit = (blob.name?.split(separator: "/"))
-                    return arrSplit?.count == (slashCount+2)
-                })[indexPath.row]
+                    if arrSplit?.count ?? 0 > slashCount+1{
+                        if slashCount-1 >= 0{
+                            print(arrSplit, slashCount-1, (arrSplit?[slashCount-1] ?? "") == lastPath)
+                            return (arrSplit?[slashCount-1] ?? "") == lastPath
+                        }else{
+                            return true
+                        }
+                    }else{
+                        return false
+                    }
+                })
                 
-                var name = documentCount?.name?.split(separator: "/")
-                name?.removeLast()
-                currentFolderPath = name?.joined(separator: "/") ?? ""
+                let arrFolderNames:[String] = arrFilter?.map{ Blob in
+                    let name:[String.SubSequence] = (Blob.name?.split(separator: "/")) ?? []
+                    return name[slashCount].string
+                } ?? []
+                
+                let arrFolder:[String] = Dictionary.init(grouping: arrFolderNames, by: {$0}).keys.sorted()
+                
+                let name:String = arrFolder[indexPath.row]
+                
+                currentFolderPath = [currentFolderPath, name].joined(separator: "/")
+                
                 self.tblView_documents.reloadData()
             } else {
                 let slashCount = self.currentFolderPath.split(separator: "/").count
@@ -945,7 +967,7 @@ extension DocumentsViewController: QLPreviewControllerDataSource, QLPreviewContr
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let tempURL = documentDirectory.appendingPathComponent(pdfName)
         
-        
+        hideIndicator()
         return PreviewItem(url: tempURL, title: (nameOfPDF.split(separator: "/")).last?.string ?? "")
     }
     

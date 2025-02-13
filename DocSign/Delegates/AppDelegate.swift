@@ -483,6 +483,8 @@ extension AppDelegate{
         let storageAccountName = storageAccountName
 //        showIndicator()
         ApiService.shared.listStorageBlobsContent(storageAccountName: storageAccountName, containerName: containerName) { result in
+            print("Fetched \(containerName) blob: \(result)")
+            
             DispatchQueue.main.async {
 //                hideIndicator()
                 switch result {
@@ -529,7 +531,7 @@ func showToast(text:String){
             topController = presentedViewController
         }
         
-        topController.view.makeToast(text, position: .top)
+        topController.view.makeToast(text,duration: 4, position: .top)
         // topController should now be your topmost view controller
     }
 }

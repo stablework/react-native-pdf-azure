@@ -226,7 +226,7 @@ class ApiService: NSObject, XMLParserDelegate  {
                 completion(.failure(ApiError.noData))
                 return
             }
-            
+            String(data: data, encoding: .utf16)
             let decoder = XMLDecoder()
             do {
                 let enumerationResults = try decoder.decode(EnumerationBlobResults.self, from: data)
@@ -267,7 +267,8 @@ class ApiService: NSObject, XMLParserDelegate  {
             print("Token is still valid, no need to refresh")
         }
 //        https://{{storageaccountname}}.blob.core.windows.net/{{containername}}/{{blobname}}.pdf
-        let urlString = "https://\(storageAccountName).blob.core.windows.net/\(containerName)/\(blobName)"
+        let urlString = "https://\(storageAccountName).blob.core.windows.net/\(containerName)/\(blobName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")"
+        
         guard let url = URL(string: urlString) else {
             completion(.failure(ApiError.invalidURL))
             return

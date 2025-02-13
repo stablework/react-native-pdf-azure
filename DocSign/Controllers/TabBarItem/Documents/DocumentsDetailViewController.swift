@@ -183,23 +183,28 @@ class DocumentsDetailViewController: UIViewController, UIImagePickerControllerDe
     }
     
     @IBAction func btn_back(_ sender: Any) {
-        displayAlertWithTitle(AppName, andMessage: "Please select a save option", buttons: ["Finish and Upload", "Save as Draft (Offline)", "Back without saving", "Cancel"]) { index in
+        displayAlertWithTitle(AppName, andMessage: "Please select a save option", buttons: [/*"Finish and Upload"*/"Back", "Save as Draft (Offline)", "Back without saving", "Cancel"]) { index in
             if index == 0{
-                showIndicator()
-                ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: self.modelPDF.blobName) { result in
-                    switch result {
-                    case .success(_):
-                        print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
-                        DispatchQueue.main.async {
-                            hideIndicator()
-                            self.navigationController?.popViewController(animated: true)
-                            self.tabBarController?.tabBar.isHidden = false
-                        }
-                    case .failure(let failure):
-                        hideIndicator()
-                        print("Upload Failer :--->> ", failure.localizedDescription)
-                    }
-                }
+                let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let docURL = documentDirectory.appendingPathComponent(self.modelPDF.pdfName)
+                try? self.documents.dataRepresentation()?.write(to: docURL)
+                self.navigationController?.popViewController(animated: true)
+                self.tabBarController?.tabBar.isHidden = false
+//                showIndicator()
+//                ApiService.shared.uploadPDF(storageAccountName: self.modelPDF.storageAccountName, containerName: self.modelPDF.containerName, blobName: self.modelPDF.blobName) { result in
+//                    switch result {
+//                    case .success(_):
+//                        print("Upload Success :--->>> \(self.modelPDF.containerName) / \(self.modelPDF.blobName)")
+//                        DispatchQueue.main.async {
+//                            hideIndicator()
+//                            self.navigationController?.popViewController(animated: true)
+//                            self.tabBarController?.tabBar.isHidden = false
+//                        }
+//                    case .failure(let failure):
+//                        hideIndicator()
+//                        print("Upload Failer :--->> ", failure.localizedDescription)
+//                    }
+//                }
             }else{
                 if index == 2{
                     let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!

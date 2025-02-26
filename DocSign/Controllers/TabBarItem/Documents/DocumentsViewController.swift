@@ -325,6 +325,23 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                     appDelegate.recentBlob.append(blob)
                 }
                 
+//                if appDelegate.internetIsAvailable{
+//                    self.downloadPDF(containerName: containerName, blobName: (curFile.name ?? "")){
+//                        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//                        let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
+//                        if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
+//                            secondVC.editPDF = .edit
+//                            secondVC.pdfURL = tempURL
+//                            secondVC.documents = pdfDocument
+//                            secondVC.modelPDF = pdfModel
+//                            secondVC.hidesBottomBarWhenPushed = true
+//                            self.navigationController?.pushViewController(secondVC, animated: true)
+//                        }
+//                    }
+//                }else {
+//                    
+//                }
+                
                 if FileManager.default.fileExists(atPath: tempURL.path){
                     if let secondVC = self.storyboard?.instantiateViewController(withIdentifier: "DocumentsDetailViewController") as? DocumentsDetailViewController {
                         secondVC.editPDF = .edit
@@ -335,6 +352,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         self.navigationController?.pushViewController(secondVC, animated: true)
                     }
                 }else{
+                    
                     self.downloadPDF(containerName: containerName, blobName: (curFile.name ?? "")){
                         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                         let tempURL = documentDirectory.appendingPathComponent(self.pdfName)
@@ -348,99 +366,98 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         }
                     }
                 }
-                
             }),
             //rename file
             
-            UIAction(title: "Rename",image: UIImage(systemName: "doc.text") ,handler: { _ in
-                let dict = curFile
-                let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
-                alertController.addTextField { (textfield) in
-                    let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                    let originPath = cachesDirectory.appendingPathComponent((dict.name ?? ""))
-                    textfield.text = originPath.deletingPathExtension().lastPathComponent
-                    textfield.placeholder = "Enter a new PDF name"
-                    textfield.becomeFirstResponder() // Show keyboard
-                    DispatchQueue.main.async{
-                        if let beginningOfText = textfield.beginningOfDocument as? UITextPosition{
-                            textfield.selectedTextRange = textfield.textRange(from: beginningOfText, to: beginningOfText)
-                        }
-                    }
-                }
-                let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
-                    if let newName = alertController.textFields?.first {
-                        let newPdfName = newName.text ?? "newFile"
-                        if !appDelegate.internetIsAvailable{
-                            displayAlertWithMessage("No Internet Connection!!")
-                            return
-                        }
-                        showIndicator()
-                        do {
-                            let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                            let originPath = cachesDirectory.appendingPathComponent(containerName + (dict.name?.replacingOccurrences(of: "/", with: "") ?? ""))
-                            let tempPath = cachesDirectory.appendingPathComponent(containerName + (dict.name ?? ""))
-                            let fileName = tempPath.deletingPathExtension().lastPathComponent.replacingOccurrences(of: containerName, with: "")
-                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName)
-                            var finalNameWithOutSlash = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName).replacingOccurrences(of: "/", with: "")
-                            var destinationPath = cachesDirectory.appendingPathComponent(containerName+finalNameWithOutSlash.replacingOccurrences(of: "/", with: ""))
-                            if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
-                                finalNameWithOutSlash += ".pdf"
-                                destinationPath = cachesDirectory.appendingPathExtension(".pdf")
-                            }
-                            if FileManager.default.fileExists(atPath: originPath.path){
-                                print("from url :- ", originPath.path)
-                                print("to url :- ", destinationPath.path)
-                                
-                                try FileManager.default.moveItem(at: originPath, to: destinationPath)
-                            }
-                            
-                            let dateFormatter = DateFormatter()
-                            var blob = curFile
-                            blob.name = finalName
-                            blob.containerName = containerName
-                            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
-                            blob.properties?.lastModified = dateFormatter.string(from: Date())
-                            
-                            if let index = appDelegate.recentBlob.firstIndex(where: {$0.name == curFile.name}){
-                                appDelegate.recentBlob[index] = blob
-                            }else{
-                                appDelegate.recentBlob.append(blob)
-                            }
-                            
-                            if let index = appDelegate.favouriteBlob.firstIndex(where: {$0.name == curFile.name}){
-                                appDelegate.favouriteBlob[index] = blob
-                            }
-                            print("KKK;::____>>",containerName, (dict.name ?? ""), finalNameWithOutSlash)
-                            ApiService.shared.deletePDF(storageAccountName: storageAccountName, containerName: containerName, blobName: (dict.name ?? "")) { _ in
-                                DispatchQueue.main.async {
-                                    ApiService.shared.uploadPDF(storageAccountName: storageAccountName, containerName: containerName, blobName: finalName) { result in
-                                        hideIndicator()
-                                        DispatchQueue.main.async {
-                                            switch result {
-                                            case .success(_):
-                                                print("Upload Success :--->>> \(containerName) / \(newPdfName)")
-                                                appDelegate.fetchBlogs(containerName:containerName)
-                                            case .failure(let failure):
-                                                print("Upload Failer :--->> ", failure.localizedDescription)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } catch {
-                            hideIndicator()
-                            print(error)
-                        }
-                    }
-                }
-                let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
-                    
-                }
-                alertController.addAction(cancelAction)
-                alertController.addAction(doneAction)
-                self.present(alertController, animated: true)
-                
-            }),
+//            UIAction(title: "Rename",image: UIImage(systemName: "doc.text") ,handler: { _ in
+//                let dict = curFile
+//                let alertController = UIAlertController(title: "Rename PDF", message: "", preferredStyle: .alert)
+//                alertController.addTextField { (textfield) in
+//                    let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                    let originPath = cachesDirectory.appendingPathComponent((dict.name ?? ""))
+//                    textfield.text = originPath.deletingPathExtension().lastPathComponent
+//                    textfield.placeholder = "Enter a new PDF name"
+//                    textfield.becomeFirstResponder() // Show keyboard
+//                    DispatchQueue.main.async{
+//                        if let beginningOfText = textfield.beginningOfDocument as? UITextPosition{
+//                            textfield.selectedTextRange = textfield.textRange(from: beginningOfText, to: beginningOfText)
+//                        }
+//                    }
+//                }
+//                let doneAction = UIAlertAction(title: "Done", style: .default) { (action) in
+//                    if let newName = alertController.textFields?.first {
+//                        let newPdfName = newName.text ?? "newFile"
+//                        if !appDelegate.internetIsAvailable{
+//                            displayAlertWithMessage("No Internet Connection!!")
+//                            return
+//                        }
+//                        showIndicator()
+//                        do {
+//                            let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                            let originPath = cachesDirectory.appendingPathComponent(containerName + (dict.name?.replacingOccurrences(of: "/", with: "") ?? ""))
+//                            let tempPath = cachesDirectory.appendingPathComponent(containerName + (dict.name ?? ""))
+//                            let fileName = tempPath.deletingPathExtension().lastPathComponent.replacingOccurrences(of: containerName, with: "")
+//                            var finalName = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName)
+//                            var finalNameWithOutSlash = (dict.name ?? "").replacingOccurrences(of: fileName, with: newPdfName).replacingOccurrences(of: "/", with: "")
+//                            var destinationPath = cachesDirectory.appendingPathComponent(containerName+finalNameWithOutSlash.replacingOccurrences(of: "/", with: ""))
+//                            if destinationPath.pathExtension.isEmpty || destinationPath.pathExtension != "pdf"{
+//                                finalNameWithOutSlash += ".pdf"
+//                                destinationPath = cachesDirectory.appendingPathExtension(".pdf")
+//                            }
+//                            if FileManager.default.fileExists(atPath: originPath.path){
+//                                print("from url :- ", originPath.path)
+//                                print("to url :- ", destinationPath.path)
+//                                
+//                                try FileManager.default.moveItem(at: originPath, to: destinationPath)
+//                            }
+//                            
+//                            let dateFormatter = DateFormatter()
+//                            var blob = curFile
+//                            blob.name = finalName
+//                            blob.containerName = containerName
+//                            dateFormatter.dateFormat = "d MMM yyyy HH mm ss"
+//                            blob.properties?.lastModified = dateFormatter.string(from: Date())
+//                            
+//                            if let index = appDelegate.recentBlob.firstIndex(where: {$0.name == curFile.name}){
+//                                appDelegate.recentBlob[index] = blob
+//                            }else{
+//                                appDelegate.recentBlob.append(blob)
+//                            }
+//                            
+//                            if let index = appDelegate.favouriteBlob.firstIndex(where: {$0.name == curFile.name}){
+//                                appDelegate.favouriteBlob[index] = blob
+//                            }
+//                            print("KKK;::____>>",containerName, (dict.name ?? ""), finalNameWithOutSlash)
+//                            ApiService.shared.deletePDF(storageAccountName: storageAccountName, containerName: containerName, blobName: (dict.name ?? "")) { _ in
+//                                DispatchQueue.main.async {
+//                                    ApiService.shared.uploadPDF(storageAccountName: storageAccountName, containerName: containerName, blobName: finalName) { result in
+//                                        hideIndicator()
+//                                        DispatchQueue.main.async {
+//                                            switch result {
+//                                            case .success(_):
+//                                                print("Upload Success :--->>> \(containerName) / \(newPdfName)")
+//                                                appDelegate.fetchBlogs(containerName:containerName)
+//                                            case .failure(let failure):
+//                                                print("Upload Failer :--->> ", failure.localizedDescription)
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        } catch {
+//                            hideIndicator()
+//                            print(error)
+//                        }
+//                    }
+//                }
+//                let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
+//                    
+//                }
+//                alertController.addAction(cancelAction)
+//                alertController.addAction(doneAction)
+//                self.present(alertController, animated: true)
+//                
+//            }),
             
             !isFavourite ?
             UIAction(title: "Add to Favorite",image: UIImage(systemName: "heart") ,handler: { _ in
@@ -605,7 +622,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
             let dict = sortedPdfArray[indexPath.row]
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
-                cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
+            let name = docURL.deletingPathExtension().lastPathComponent
+                cell.lbl_title.text = name//(dict.name?.split(separator: "/"))?.last?.string ?? ""
                 cell.img_profile.image = UIImage(systemName: "doc")
                 cell.btn_editPdf.isHidden = false
                 cell.selectionStyle = .gray
@@ -687,7 +705,8 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
-                    cell.lbl_title.text = (dict.name?.split(separator: "/"))?.last?.string ?? ""
+                let name = docURL.deletingPathExtension().lastPathComponent
+                    cell.lbl_title.text = name//(dict.name?.split(separator: "/"))?.last?.string ?? ""
                     cell.img_profile.image = UIImage(systemName: "doc")
                     cell.btn_editPdf.isHidden = false
                     cell.selectionStyle = .gray
@@ -719,9 +738,26 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 appDelegate.recentBlob[index].properties?.lastModified = dateFormatter.string(from: Date())
             }
             pdfName = (dict.containerName ?? "")+(sortedPdfArray[indexPath.row].name ?? "").replacingOccurrences(of: "/", with: "")
-            nameOfPDF = (sortedPdfArray[indexPath.row].name ?? "")
+            
             let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let docURL = documentDirectory.appendingPathComponent(dict.name?.replacingOccurrences(of: "/", with: "") ?? "")
+            let name = docURL.deletingPathExtension().lastPathComponent
+            nameOfPDF = name//(sortedPdfArray[indexPath.row].name ?? "")
+            
             let tempURL = documentDirectory.appendingPathComponent(pdfName)
+//            if appDelegate.internetIsAvailable{
+//                downloadPDF(containerName: dict.containerName ?? "", blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+//                    showIndicator()
+//                    let previewController = QLPreviewController()
+//                    previewController.dataSource = self
+//                    previewController.delegate = self
+//                    previewController.setEditing(false, animated: true)
+//                    self.present(previewController, animated: true, completion: nil)
+//                }
+//            }else {
+//                
+//            }
+            
             if FileManager.default.fileExists(atPath: tempURL.path){
                 showIndicator()
                 let previewController = QLPreviewController()
@@ -814,9 +850,24 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                 } ?? []
                 
                 pdfName = containerName+(sortedPdfArray[indexPath.row].name?.replacingOccurrences(of: "/", with: "") ?? "")
-                nameOfPDF = sortedPdfArray[indexPath.row].name ?? ""
                 let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let docURL = documentDirectory.appendingPathComponent(sortedPdfArray[indexPath.row].name?.replacingOccurrences(of: "/", with: "") ?? "")
+                let name = docURL.deletingPathExtension().lastPathComponent
+                nameOfPDF = name//(sortedPdfArray[indexPath.row].name ?? "")
                 let tempURL = documentDirectory.appendingPathComponent(pdfName)
+//                if appDelegate.internetIsAvailable{
+//                    downloadPDF(containerName: containerName, blobName: (sortedPdfArray[indexPath.row].name ?? "")){
+//                        showIndicator()
+//                        let previewController = QLPreviewController()
+//                        previewController.dataSource = self
+//                        previewController.delegate = self
+//                        previewController.setEditing(false, animated: true)
+//                        self.present(previewController, animated: true, completion: nil)
+//                    }
+//                }else{
+//                    
+//                }
+                
                 if FileManager.default.fileExists(atPath: tempURL.path){
                     showIndicator()
                     let previewController = QLPreviewController()
@@ -834,6 +885,7 @@ class DocumentsViewController: UIViewController, UITableViewDelegate, UITableVie
                         self.present(previewController, animated: true, completion: nil)
                     }
                 }
+                
             }
         }
     }
